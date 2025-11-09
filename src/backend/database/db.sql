@@ -122,12 +122,12 @@ INSERT INTO `khoa` (`maKhoa`, `tenKhoa`, `moTa`) VALUES
 CREATE TABLE `lichkham` (
   `maLichKham` int(11) NOT NULL,
   `maBacSi` varchar(20) NOT NULL,
-  `maBenhNhan` varchar(20) DEFAULT NULL,
+  `maBenhNhan` varchar(20) NOT NULL,
   `ngayKham` date NOT NULL,
   `maCa` int(11) NOT NULL,
   `maSuat` int(11) NOT NULL,
   `maGoi` int(11) DEFAULT NULL,
-  `trangThai` enum('Trống','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL,
+  `trangThai` enum('Chờ','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL,
   `ghiChu` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -290,3 +290,4 @@ ALTER TABLE `quantrivien`
 ALTER TABLE `suatkham`
   ADD CONSTRAINT `suatkham_ibfk_1` FOREIGN KEY (`maCa`) REFERENCES `calamviec` (`maCa`);
 COMMIT;
+
