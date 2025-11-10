@@ -20,7 +20,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 10%, #f8f9fa 100%);
             min-height: 100vh;
         }
-
+        
         /* Sidebar */
         .sidebar {
             position: fixed;
@@ -571,7 +571,7 @@
         <div class="content-area">
             <!-- Statistics -->
             <div class="stats-row">
-                <div class="stat-card total">
+                <div class="stat-card total" onclick="scrollToSection('tongbenhnhanSection')">
                     <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
@@ -636,6 +636,8 @@
                     </button>
                 </div>
             </div>
+
+            <section id="tongbenhnhanSection"></section>
 
             <!-- Table Section -->
             <div class="table-section">
@@ -808,7 +810,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // API Configuration
-        const API_BASE = 'api/admin';
+        const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/admin';
         
         let currentPage = 1;
         const itemsPerPage = 9;
@@ -829,12 +831,14 @@
                 const response = await fetch(`${API_BASE}/patient-stats.php`);
                 const data = await response.json();
                 
-                document.getElementById('totalPatients').textContent = data.total || 0;
-                document.getElementById('maleCount').textContent = data.male || 0;
-                document.getElementById('femaleCount').textContent = data.female || 0;
-                document.getElementById('bhytCount').textContent = data.bhyt || 0;
+                animateNumber('totalPatients',data.total || 0);
+                animateNumber('maleCount',data.male || 0);
+                animateNumber('femaleCount',data.female || 0);
+                animateNumber('bhytCount',data.bhyt || 0);
             } catch (error) {
-                console.error('Error loading statistics:', error);
+                console.error('Lỗi:', error);
+                document.querySelectorAll('#totalPatients, #maleCount, #femaleCount, #bhytCount')
+                    .forEach(el => el.textContent = 'Lỗi');
             }
         }
 
@@ -1029,6 +1033,8 @@
             document.getElementById('password').required = true;
             document.getElementById('passwordRequired').textContent = '*';
             new bootstrap.Modal(document.getElementById('patientModal')).show();
+            const today = new Date().toISOString().split('T')[0];  // Lấy ngày hiện tại động: YYYY-MM-DD
+            document.getElementById('patientBirthDate').setAttribute('max', today);
         }
 
         async function editPatient(maBenhNhan) {
@@ -1048,6 +1054,8 @@
             document.getElementById('passwordRequired').textContent = '';
             
             new bootstrap.Modal(document.getElementById('patientModal')).show();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('patientBirthDate').setAttribute('max', today);
         }
 
         async function viewPatient(maBenhNhan) {
@@ -1159,19 +1167,6 @@
             }
         }
 
-        // View Toggle
-        function switchView(view) {
-            const buttons = document.querySelectorAll('.view-toggle button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.closest('button').classList.add('active');
-            
-            if (view === 'grid') {
-                // Already using grid view
-            } else {
-                alert('Chế độ xem danh sách đang được phát triển!');
-            }
-        }
-
         // Utility Functions
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
@@ -1179,6 +1174,25 @@
             return date.toLocaleDateString('vi-VN');
         }
 
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            element.classList.remove('loading');
+            
+            let currentNumber = 0;
+            const increment = targetNumber / 50;
+            const duration = 1000;
+            const stepTime = duration / 50;
+            
+            const timer = setInterval(() => {
+                currentNumber += increment;
+                if (currentNumber >= targetNumber) {
+                    element.textContent = targetNumber.toLocaleString('vi-VN');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(currentNumber).toLocaleString('vi-VN');
+                }
+            }, stepTime);
+        }
         function calculateAge(birthDate) {
             if (!birthDate) return 'N/A';
             const today = new Date();
@@ -1189,6 +1203,41 @@
                 age--;
             }
             return age;
+        }
+
+        function changeSpecPage(page) {
+            const totalPages = Math.ceil(filteredSpecialties.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                specCurrentPage = page;
+                displaySpecialties();
+                scrollToSection('tongbenhnhanSection');
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showLoading(loadingId, containerId) {
+            document.getElementById(loadingId).style.display = 'block';
+            document.getElementById(containerId).style.display = 'none';
+        }
+
+        function hideLoading(loadingId, containerId) {
+            document.getElementById(loadingId).style.display = 'none';
+            document.getElementById(containerId).style.display = 'block';
+        }
+
+        function switchView(view) {
+            const buttons = document.querySelectorAll('.view-toggle button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('button').classList.add('active');
+            
+            if (view === 'grid') {
+                // Already using grid view
+            } else {
+                alert('Chế độ xem danh sách đang được phát triển!');
+            }
         }
 
         function showAlert(type, message) {
