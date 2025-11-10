@@ -4,13 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Kết nối database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "datlichkham";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli("localhost", "root", "", "datlichkham");
 $conn->set_charset("utf8mb4");
 
 if ($conn->connect_error) {
@@ -18,39 +12,27 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Lấy dữ liệu POST
 $data = json_decode(file_get_contents('php://input'), true);
 
 $maLichKham = $conn->real_escape_string($data['maLichKham']);
 $maBenhNhan = $conn->real_escape_string($data['maBenhNhan']);
 $maBacSi = $conn->real_escape_string($data['maBacSi']);
 $ngayKham = $conn->real_escape_string($data['ngayKham']);
+$maCa = intval($data['maCa']);
+$maSuat = intval($data['maSuat']);
+$maGoi = !empty($data['maGoi']) ? intval($data['maGoi']) : 'NULL';
 $trangThai = $conn->real_escape_string($data['trangThai']);
+$ghiChu = !empty($data['ghiChu']) ? "'".$conn->real_escape_string($data['ghiChu'])."'" : 'NULL';
 
-// Kiểm tra xem bác sĩ có lịch khám trùng không (trừ lịch khám hiện tại)
-$checkSql = "SELECT COUNT(*) as count FROM lichkham 
-             WHERE maBacSi = '$maBacSi' 
-             AND ngayKham = '$ngayKham' 
-             AND maLichKham != '$maLichKham'
-             AND trangThai != 'cancelled'";
-$checkResult = $conn->query($checkSql);
-$count = $checkResult->fetch_assoc()['count'];
-
-if ($count > 0) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Bác sĩ đã có lịch khám vào ngày này!'
-    ], JSON_UNESCAPED_UNICODE);
-    $conn->close();
-    exit;
-}
-
-// Cập nhật lịch khám
 $sql = "UPDATE lichkham 
         SET maBenhNhan = '$maBenhNhan',
             maBacSi = '$maBacSi',
             ngayKham = '$ngayKham',
-            trangThai = '$trangThai'
+            maCa = $maCa,
+            maSuat = $maSuat,
+            maGoi = $maGoi,
+            trangThai = '$trangThai',
+            ghiChu = $ghiChu
         WHERE maLichKham = '$maLichKham'";
 
 if ($conn->query($sql) === TRUE) {

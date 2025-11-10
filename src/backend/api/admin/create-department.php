@@ -5,33 +5,29 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-// Kết nối database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "datlichkham";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli("localhost", "root", "", "datlichkham");
 $conn->set_charset("utf8mb4");
-
 if ($conn->connect_error) {
     echo json_encode(['success' => false, 'message' => 'Kết nối thất bại']);
     exit;
 }
 
 try {
-    // Lấy dữ liệu POST
     $data = json_decode(file_get_contents('php://input'), true);
     
-    $tenKhoa = $conn->real_escape_string($data['tenKhoa']);
-    $moTa = $conn->real_escape_string($data['moTa']);
+    $tenKhoa = trim($conn->real_escape_string($data['tenKhoa'] ?? ''));
+    $moTa = $conn->real_escape_string($data['moTa'] ?? '');
+    
+    if (empty($tenKhoa)) {
+        throw new Exception('Tên khoa là bắt buộc!');
+    }
     
     // Tạo mã khoa tự động (3 chữ cái đầu viết hoa + 4 số cuối của timestamp)
     $prefix = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $tenKhoa), 0, 3));
     if (strlen($prefix) < 3) {
         $prefix = str_pad($prefix, 3, 'X');
     }
-    $maKhoa = $prefix . substr(time(), -4);
+    $maKhoa = $prefix . date('Hi');
     
     // Kiểm tra mã khoa đã tồn tại chưa
     $checkSql = "SELECT COUNT(*) as count FROM khoa WHERE maKhoa = '$maKhoa'";
