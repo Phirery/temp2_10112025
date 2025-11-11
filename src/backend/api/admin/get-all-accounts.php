@@ -16,10 +16,6 @@ if ($conn->connect_error) {
     exit;
 }
 
-// -------------------------------------------
-// Lấy danh sách tài khoản cùng thông tin liên quan
-// -------------------------------------------
-
 $sql = "
 SELECT 
     nd.id, 

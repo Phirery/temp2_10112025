@@ -31,7 +31,7 @@ try {
     $maChuyenKhoa = $conn->real_escape_string($data['maChuyenKhoa']);
     $tenDangNhap = $conn->real_escape_string($data['tenDangNhap']);
     $matKhau = isset($data['matKhau']) ? $conn->real_escape_string($data['matKhau']) : '';
-    
+    $moTa = isset($data['moTa']) ? $conn->real_escape_string($data['moTa']) : '';
     // Lấy nguoiDungId từ maBacSi
     $getUserSql = "SELECT nguoiDungId FROM bacsi WHERE maBacSi = '$maBacSi'";
     $userResult = $conn->query($getUserSql);
@@ -76,7 +76,8 @@ try {
     // 2. Cập nhật bảng bacsi
     $sql2 = "UPDATE bacsi 
              SET tenBacSi = '$tenBacSi',
-                 maChuyenKhoa = '$maChuyenKhoa'
+                 maChuyenKhoa = '$maChuyenKhoa',
+                     moTa = '$moTa'
              WHERE maBacSi = '$maBacSi'";
     
     if (!$conn->query($sql2)) {

@@ -24,8 +24,8 @@ if (!empty($data['id'])) {
     $id = intval($data['id']);
     $trangThai = !empty($data['lock']) ? 'Khóa' : 'Hoạt Động';
 
-    // Kiểm tra xem tài khoản tồn tại không
-    $checkQuery = "SELECT id FROM nguoidung WHERE id = ?";
+    // Lấy thông tin tài khoản
+    $checkQuery = "SELECT id, vaiTro FROM nguoidung WHERE id = ?";
     $stmt = $conn->prepare($checkQuery);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -36,18 +36,35 @@ if (!empty($data['id'])) {
         exit;
     }
 
-    // Cập nhật trạng thái tài khoản
-    $updateQuery = "UPDATE nguoidung SET trangThai = ? WHERE id = ?";
-    $stmt = $conn->prepare($updateQuery);
-    $stmt->bind_param("si", $trangThai, $id);
+    $user = $result->fetch_assoc();
 
-    if ($stmt->execute()) {
-        echo json_encode([
-            'success' => true,
-            'message' => ($trangThai === 'Khóa' ? 'Khóa' : 'Mở khóa') . ' tài khoản thành công'
-        ]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Không thể cập nhật trạng thái tài khoản']);
+    // Chặn khóa tài khoản quản trị
+    if (strtolower($user['vaiTro']) === 'quantri' && $trangThai === 'Khóa') {
+        echo json_encode(['success' => false, 'message' => 'Không thể khóa tài khoản quản trị viên']);
+        exit;
+    }
+
+    // Bắt đầu transaction để an toàn
+    $conn->begin_transaction();
+
+    try {
+        $updateQuery = "UPDATE nguoidung SET trangThai = ? WHERE id = ?";
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("si", $trangThai, $id);
+
+        if ($stmt->execute()) {
+            $conn->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => ($trangThai === 'Khóa' ? 'Khóa' : 'Mở khóa') . ' tài khoản thành công'
+            ]);
+        } else {
+            $conn->rollback();
+            echo json_encode(['success' => false, 'message' => 'Không thể cập nhật trạng thái tài khoản']);
+        }
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
     }
 
     $stmt->close();
