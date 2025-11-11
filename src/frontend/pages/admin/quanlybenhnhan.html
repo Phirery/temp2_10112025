@@ -20,8 +20,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 10%, #f8f9fa 100%);
             min-height: 100vh;
         }
-        
-        /* Sidebar */
+
         .sidebar {
             position: fixed;
             top: 0;
@@ -79,7 +78,6 @@
             font-size: 1.1rem;
         }
 
-        /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
@@ -101,7 +99,6 @@
             padding: 30px;
         }
 
-        /* Statistics Cards */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -183,7 +180,6 @@
             margin-top: 5px;
         }
 
-        /* Filter Section */
         .filter-section {
             background: white;
             border-radius: 12px;
@@ -198,7 +194,6 @@
             font-weight: 700;
         }
 
-        /* Table Section */
         .table-section {
             background: white;
             border-radius: 12px;
@@ -228,91 +223,46 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        /* Patient Cards Grid */
-        .patients-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
         }
 
-        .patient-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .patient-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-            border-color: var(--primary-purple);
-        }
-
-        .patient-card-header {
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .patient-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 2rem;
-            color: var(--primary-purple);
-            font-weight: 700;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .patient-name {
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .patient-id {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-
-        .patient-card-body {
-            padding: 20px;
-        }
-
-        .patient-info-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .patient-info-item:last-child {
-            border-bottom: none;
-        }
-
-        .patient-info-item i {
-            width: 30px;
-            color: var(--primary-purple);
-        }
-
-        .patient-info-item .label {
+        .custom-table thead th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #495057;
             font-weight: 600;
-            color: #666;
-            min-width: 100px;
+            padding: 15px;
+            border: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .patient-info-item .value {
-            color: #333;
+        .custom-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .custom-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-table tbody td {
+            padding: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .custom-table tbody tr td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .custom-table tbody tr td:last-child {
+            border-radius: 0 8px 8px 0;
         }
 
         .gender-badge {
@@ -348,22 +298,14 @@
             font-style: italic;
         }
 
-        .patient-card-footer {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
         .btn-action {
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
+            margin: 0 3px;
             transition: all 0.3s;
-            flex: 1;
         }
 
         .btn-view {
@@ -396,7 +338,6 @@
             color: white;
         }
 
-        /* Modal */
         .modal-content {
             border-radius: 15px;
             border: none;
@@ -451,7 +392,6 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 50px;
@@ -464,48 +404,6 @@
             border-width: 0.3rem;
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h5 {
-            color: #999;
-        }
-
-        /* View Toggle */
-        .view-toggle {
-            display: flex;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 5px;
-            border-radius: 8px;
-        }
-
-        .view-toggle button {
-            padding: 8px 15px;
-            border: none;
-            background: transparent;
-            color: #666;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .view-toggle button.active {
-            background: white;
-            color: var(--primary-purple);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Pagination */
         .pagination-container {
             display: flex;
             justify-content: space-between;
@@ -535,10 +433,53 @@
             background: var(--primary-purple);
             border-color: var(--primary-purple);
         }
+
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            font-size: 26px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 9999;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        #scrollTopBtn span {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <h4><i class="fas fa-hospital-alt"></i> Eden Admin</h4>
@@ -555,23 +496,17 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
         <div class="top-bar">
             <h5><i class="fas fa-user-injured me-2"></i>Quản Lý Bệnh Nhân</h5>
-            <div>
-                <button class="btn btn-sm btn-outline-danger" onclick="window.location.href='dashboard.html'">
-                    <i class="fas fa-arrow-left me-2"></i>Quay lại
-                </button>
-            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </button>
         </div>
 
-        <!-- Content Area -->
         <div class="content-area">
-            <!-- Statistics -->
             <div class="stats-row">
-                <div class="stat-card total" onclick="scrollToSection('tongbenhnhanSection')">
+                <div class="stat-card total" onclick="scrollToSection('benhnhanSection')">
                     <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
@@ -601,7 +536,6 @@
                 </div>
             </div>
 
-            <!-- Filter Section -->
             <div class="filter-section">
                 <h5><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
                 <div class="row g-3">
@@ -624,7 +558,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tìm kiếm</label>
-                        <input type="text" class="form-control" id="filterSearch" placeholder="Tên bệnh nhân, mã BN, SĐT...">
+                        <input type="text" class="form-control" id="filterSearch" placeholder="Tên bệnh nhân, SĐT...">
                     </div>
                 </div>
                 <div class="mt-3">
@@ -637,41 +571,38 @@
                 </div>
             </div>
 
-            <section id="tongbenhnhanSection"></section>
+            <section id="benhnhanSection"></section>
 
-            <!-- Table Section -->
             <div class="table-section">
                 <div class="table-header">
                     <h5><i class="fas fa-list me-2"></i>Danh sách bệnh nhân</h5>
-                    <div class="d-flex gap-3 align-items-center">
-                        <div class="view-toggle">
-                            <button class="active" onclick="switchView('grid')">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button onclick="switchView('list')">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                        <button class="btn-add" onclick="openAddModal()">
-                            <i class="fas fa-plus me-2"></i>Thêm bệnh nhân
-                        </button>
-                    </div>
+                    <button class="btn-add" onclick="openAddModal()">
+                        <i class="fas fa-plus me-2"></i>Thêm bệnh nhân
+                    </button>
                 </div>
 
                 <div id="loadingIndicator" class="loading" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                    <div class="spinner-border text-primary"></div>
                     <p class="mt-3">Đang tải dữ liệu...</p>
                 </div>
 
-                <!-- Grid View -->
-                <div id="gridView" class="patients-grid">
-                    <!-- Patient cards will be inserted here -->
+                <div class="table-responsive" id="tableContainer">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Họ và tên</th>
+                                <th style="width: 11%;">Ngày sinh</th>
+                                <th style="width: 5%;">Giới tính</th>
+                                <th style="width: 4%;">Điện thoại</th>
+                                <th style="width: 10%;">BHYT</th>
+                                <th style="width: 10%;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody"></tbody>
+                    </table>
                 </div>
 
-                <!-- Pagination -->
-                <div class="pagination-container" id="paginationSection" style="display: none;">
+                <div class="pagination-container">
                     <div class="text-muted" id="recordInfo">Hiển thị 0 - 0 của 0 bệnh nhân</div>
                     <nav>
                         <ul class="pagination" id="paginationContainer"></ul>
@@ -681,7 +612,6 @@
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
     <div class="modal fade" id="patientModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -692,23 +622,19 @@
                 <div class="modal-body">
                     <form id="patientForm">
                         <input type="hidden" id="patientId">
-                        
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Tên bệnh nhân <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="patientName" required>
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                 <input type="tel" class="form-control" id="patientPhone" required pattern="[0-9]{10}">
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="patientBirthDate" required>
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Giới tính <span class="text-danger">*</span></label>
                                 <select class="form-select" id="patientGender" required>
@@ -718,24 +644,20 @@
                                     <option value="khac">Khác</option>
                                 </select>
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Số thẻ BHYT</label>
                                 <input type="text" class="form-control" id="patientBHYT" maxlength="15" placeholder="VD: DN1234567890123">
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="username" required>
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Mật khẩu <span class="text-danger" id="passwordRequired">*</span></label>
                                 <input type="password" class="form-control" id="password">
                                 <small class="text-muted">Để trống nếu không muốn thay đổi (khi sửa)</small>
                             </div>
                         </div>
-
                         <button type="submit" class="btn-submit mt-4">
                             <i class="fas fa-save me-2"></i>Lưu thông tin
                         </button>
@@ -745,7 +667,6 @@
         </div>
     </div>
 
-    <!-- View Detail Modal -->
     <div class="modal fade" id="viewModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -753,88 +674,48 @@
                     <h5 class="modal-title">Thông tin bệnh nhân</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="viewModalBody">
-                    <!-- Details will be inserted here -->
-                </div>
+                <div class="modal-body" id="viewModalBody"></div>
             </div>
         </div>
     </div>
 
-    <!-- Nút lên đầu trang -->
-    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-    style="
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #667eea;
-        color: white;
-        border: none;
-        font-size: 26px;
-        font-weight: bold;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-        z-index: 9999;
-    ">
-    <span style="transform: translateY(-2px);">▲</span>
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span>▲</span>
     </button>
-
-    <script>
-    // Hiện nút khi cuộn xuống
-    window.onscroll = function() {
-        const btn = document.getElementById('scrollTopBtn');
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = 'flex';
-        } else {
-            btn.style.display = 'none';
-        }
-    };
-
-    // Hiệu ứng hover
-    document.getElementById('scrollTopBtn').onmouseover = function() {
-        this.style.backgroundColor = '#0056b3';
-        this.style.transform = 'scale(1.1)';
-    };
-    document.getElementById('scrollTopBtn').onmouseout = function() {
-        this.style.backgroundColor = '#007bff';
-        this.style.transform = 'scale(1)';
-    };
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // API Configuration
         const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/admin';
-        
+
         let currentPage = 1;
-        const itemsPerPage = 9;
+        const itemsPerPage = 10;
         let allPatients = [];
         let filteredPatients = [];
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadStatistics();
             loadPatients();
-            
             document.getElementById('patientForm').addEventListener('submit', handleFormSubmit);
+            
+            window.onscroll = function() {
+                const btn = document.getElementById('scrollTopBtn');
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    btn.style.display = 'flex';
+                } else {
+                    btn.style.display = 'none';
+                }
+            };
         });
 
-        // Load Statistics
         async function loadStatistics() {
             try {
                 const response = await fetch(`${API_BASE}/patient-stats.php`);
                 const data = await response.json();
                 
-                animateNumber('totalPatients',data.total || 0);
-                animateNumber('maleCount',data.male || 0);
-                animateNumber('femaleCount',data.female || 0);
-                animateNumber('bhytCount',data.bhyt || 0);
+                animateNumber('totalPatients', data.total || 0);
+                animateNumber('maleCount', data.male || 0);
+                animateNumber('femaleCount', data.female || 0);
+                animateNumber('bhytCount', data.bhyt || 0);
             } catch (error) {
                 console.error('Lỗi:', error);
                 document.querySelectorAll('#totalPatients, #maleCount, #femaleCount, #bhytCount')
@@ -842,10 +723,8 @@
             }
         }
 
-        // Load Patients
         async function loadPatients() {
-            document.getElementById('loadingIndicator').style.display = 'block';
-            document.getElementById('gridView').style.display = 'none';
+            showLoading(true);
             
             try {
                 const response = await fetch(`${API_BASE}/get-all-patients.php`);
@@ -862,88 +741,59 @@
                 console.error('Error loading patients:', error);
                 showAlert('error', 'Lỗi kết nối đến server');
             } finally {
-                document.getElementById('loadingIndicator').style.display = 'none';
-                document.getElementById('gridView').style.display = 'grid';
+                showLoading(false);
             }
         }
 
-        // Display Patients (Grid View)
         function displayPatients() {
-            const container = document.getElementById('gridView');
+            const tbody = document.getElementById('patientTableBody');
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pageData = filteredPatients.slice(start, end);
             
             if (pageData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i class="fas fa-user-injured"></i>
-                        <h5>Không có bệnh nhân nào</h5>
-                        <p class="text-muted">Thử thay đổi bộ lọc hoặc thêm bệnh nhân mới</p>
-                    </div>
-                `;
-                document.getElementById('paginationSection').style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Không có dữ liệu</td></tr>';
                 return;
             }
             
-            container.innerHTML = pageData.map(patient => {
-                const initials = patient.tenBenhNhan.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            tbody.innerHTML = pageData.map(patient => {
                 const genderClass = patient.gioiTinh === 'nam' ? 'male' : patient.gioiTinh === 'nu' ? 'female' : '';
                 const genderLabel = patient.gioiTinh === 'nam' ? 'Nam' : patient.gioiTinh === 'nu' ? 'Nữ' : 'Khác';
                 const age = patient.ngaySinh ? calculateAge(patient.ngaySinh) : 'N/A';
                 
                 return `
-                    <div class="patient-card">
-                        <div class="patient-card-header">
-                            <div class="patient-avatar">${initials}</div>
-                            <h5 class="patient-name">${patient.tenBenhNhan}</h5>
-                            <div class="patient-id">Mã BN: ${patient.maBenhNhan}</div>
-                        </div>
-                        <div class="patient-card-body">
-                            <div class="patient-info-item">
-                                <i class="fas fa-birthday-cake"></i>
-                                <span class="label">Ngày sinh:</span>
-                                <span class="value">${formatDate(patient.ngaySinh)} (${age} tuổi)</span>
-                            </div>
-                            <div class="patient-info-item">
-                                <i class="fas fa-venus-mars"></i>
-                                <span class="label">Giới tính:</span>
-                                <span class="gender-badge ${genderClass}">${genderLabel}</span>
-                            </div>
-                            <div class="patient-info-item">
-                                <i class="fas fa-phone"></i>
-                                <span class="label">Điện thoại:</span>
-                                <span class="value">${patient.soDienThoai || 'N/A'}</span>
-                            </div>
-                            <div class="patient-info-item">
-                                <i class="fas fa-id-card"></i>
-                                <span class="label">BHYT:</span>
-                                ${patient.soTheBHYT ? 
-                                    `<span class="bhyt-badge">${patient.soTheBHYT}</span>` : 
-                                    `<span class="no-bhyt">Chưa có</span>`
-                                }
-                            </div>
-                        </div>
-                        <div class="patient-card-footer">
+                    <tr>
+                        <td>
+                            <i class="fas fa-user-injured me-2 text-primary"></i>
+                            ${patient.tenBenhNhan}
+                        </td>
+                        <td>${formatDate(patient.ngaySinh)} (${age} tuổi)</td>
+                        <td><span class="gender-badge ${genderClass}">${genderLabel}</span></td>
+                        <td>${patient.soDienThoai || 'N/A'}</td>
+                        <td>
+                            ${patient.soTheBHYT ? 
+                                `<span class="bhyt-badge">${patient.soTheBHYT}</span>` : 
+                                `<span class="no-bhyt">Chưa có</span>`
+                            }
+                        </td>
+                        <td>
                             <button class="btn-action btn-view" onclick="viewPatient('${patient.maBenhNhan}')" title="Xem chi tiết">
-                                <i class="fas fa-eye me-1"></i>Xem
+                                <i class="fas fa-eye"></i>
                             </button>
                             <button class="btn-action btn-edit" onclick="editPatient('${patient.maBenhNhan}')" title="Chỉnh sửa">
-                                <i class="fas fa-edit me-1"></i>Sửa
+                                <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn-action btn-delete" onclick="deletePatient('${patient.maBenhNhan}')" title="Xóa">
-                                <i class="fas fa-trash me-1"></i>Xóa
+                                <i class="fas fa-trash"></i>
                             </button>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
             
-            document.getElementById('paginationSection').style.display = 'flex';
             updatePagination();
         }
 
-        // Update Pagination
         function updatePagination() {
             const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
             const container = document.getElementById('paginationContainer');
@@ -953,16 +803,14 @@
             document.getElementById('recordInfo').textContent = 
                 `Hiển thị ${start} - ${end} của ${filteredPatients.length} bệnh nhân`;
             
-            let html = '';
+            let html = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
             
-            // Previous button
-            html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-            </li>`;
-            
-            // Page numbers
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -973,12 +821,13 @@
                 }
             }
             
-            // Next button
-            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </li>`;
+            html += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
             
             container.innerHTML = html;
         }
@@ -992,7 +841,6 @@
             }
         }
 
-        // Apply Filters
         function applyFilters() {
             const gender = document.getElementById('filterGender').value;
             const bhyt = document.getElementById('filterBHYT').value;
@@ -1005,7 +853,7 @@
                 if (bhyt === 'co' && !patient.soTheBHYT) match = false;
                 if (bhyt === 'khong' && patient.soTheBHYT) match = false;
                 if (search) {
-                    const searchFields = `${patient.tenBenhNhan} ${patient.maBenhNhan} ${patient.soDienThoai || ''}`.toLowerCase();
+                    const searchFields = `${patient.tenBenhNhan} ${patient.soDienThoai || ''}`.toLowerCase();
                     if (!searchFields.includes(search)) match = false;
                 }
                 
@@ -1025,7 +873,6 @@
             displayPatients();
         }
 
-        // Modal Functions
         function openAddModal() {
             document.getElementById('modalTitle').textContent = 'Thêm bệnh nhân mới';
             document.getElementById('patientForm').reset();
@@ -1033,7 +880,7 @@
             document.getElementById('password').required = true;
             document.getElementById('passwordRequired').textContent = '*';
             new bootstrap.Modal(document.getElementById('patientModal')).show();
-            const today = new Date().toISOString().split('T')[0];  // Lấy ngày hiện tại động: YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
             document.getElementById('patientBirthDate').setAttribute('max', today);
         }
 
@@ -1073,9 +920,6 @@
                         <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700;">
                             ${initials}
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <strong>Mã bệnh nhân:</strong> ${patient.maBenhNhan}
                     </div>
                     <div class="col-12">
                         <strong>Họ và tên:</strong> ${patient.tenBenhNhan}
@@ -1126,7 +970,6 @@
             }
         }
 
-        // Form Submit Handler
         async function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -1167,17 +1010,26 @@
             }
         }
 
-        // Utility Functions
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const date = new Date(dateString);
             return date.toLocaleDateString('vi-VN');
         }
 
+        function calculateAge(birthDate) {
+            if (!birthDate) return 'N/A';
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
         function animateNumber(elementId, targetNumber) {
             const element = document.getElementById(elementId);
-            element.classList.remove('loading');
-            
             let currentNumber = 0;
             const increment = targetNumber / 50;
             const duration = 1000;
@@ -1193,51 +1045,10 @@
                 }
             }, stepTime);
         }
-        function calculateAge(birthDate) {
-            if (!birthDate) return 'N/A';
-            const today = new Date();
-            const birth = new Date(birthDate);
-            let age = today.getFullYear() - birth.getFullYear();
-            const monthDiff = today.getMonth() - birth.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-                age--;
-            }
-            return age;
-        }
 
-        function changeSpecPage(page) {
-            const totalPages = Math.ceil(filteredSpecialties.length / itemsPerPage);
-            if (page >= 1 && page <= totalPages) {
-                specCurrentPage = page;
-                displaySpecialties();
-                scrollToSection('tongbenhnhanSection');
-            }
-        }
-
-        function scrollToSection(id) {
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function showLoading(loadingId, containerId) {
-            document.getElementById(loadingId).style.display = 'block';
-            document.getElementById(containerId).style.display = 'none';
-        }
-
-        function hideLoading(loadingId, containerId) {
-            document.getElementById(loadingId).style.display = 'none';
-            document.getElementById(containerId).style.display = 'block';
-        }
-
-        function switchView(view) {
-            const buttons = document.querySelectorAll('.view-toggle button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.closest('button').classList.add('active');
-            
-            if (view === 'grid') {
-                // Already using grid view
-            } else {
-                alert('Chế độ xem danh sách đang được phát triển!');
-            }
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+            document.getElementById('tableContainer').style.display = show ? 'none' : 'block';
         }
 
         function showAlert(type, message) {
@@ -1250,10 +1061,20 @@
             `;
             
             document.body.appendChild(alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function changeSpecPage(page) {
+            const totalPages = Math.ceil(filteredSpecialties.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                specCurrentPage = page;
+                displaySpecialties();
+                scrollToSection('benhnhanSection');
+            }
         }
     </script>
 </body>
