@@ -27,7 +27,24 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
         .sidebar {
             position: fixed;
             top: 0;
@@ -40,6 +57,7 @@
             box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             overflow-y: auto;
+            transition: transform 0.3s;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -55,6 +73,7 @@
             padding: 0 20px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             margin-bottom: 20px;
+            cursor: pointer;
         }
 
         .sidebar-header h4 {
@@ -66,6 +85,7 @@
         .sidebar-menu {
             list-style: none;
             padding: 0;
+            flex: 1;
         }
 
         .sidebar-menu li {
@@ -79,7 +99,6 @@
             color: white;
             text-decoration: none;
             transition: all 0.3s;
-            position: relative;
         }
 
         .sidebar-menu a:hover,
@@ -95,14 +114,18 @@
             font-size: 1.1rem;
         }
 
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 0;
-            min-height: 100vh;
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: auto;
         }
 
-        /* Top Bar */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
         .top-bar {
             background: white;
             padding: 15px 30px;
@@ -112,7 +135,18 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 999;
+            z-index: 998;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .top-bar h5 {
@@ -121,10 +155,34 @@
             font-weight: 600;
         }
 
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-purple);
+            cursor: pointer;
+            padding: 5px;
+        }
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #666;
         }
 
         .user-avatar {
@@ -139,7 +197,7 @@
             font-weight: 600;
         }
 
-        .logout-btn {
+        .logout-btn-desktop {
             background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
             color: white;
             border: none;
@@ -150,17 +208,15 @@
             cursor: pointer;
         }
 
-        .logout-btn:hover {
+        .logout-btn-desktop:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
         }
 
-        /* Content Area */
         .content-area {
             padding: 30px;
         }
 
-        /* Section Title */
         .section-title {
             font-size: 1.8rem;
             font-weight: 700;
@@ -171,7 +227,6 @@
             display: inline-block;
         }
 
-        /* Statistics Cards */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -187,6 +242,7 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .stat-card::before {
@@ -261,7 +317,6 @@
             color: #ff6b6b;
         }
 
-        /* Management Cards */
         .management-section {
             margin-top: 40px;
         }
@@ -357,11 +412,50 @@
             gap: 12px;
         }
 
-        /* Responsive */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            font-size: 26px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 997;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        #scrollTopBtn span {
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
+                right: 0;
+                left: auto;
+                transform: translateX(100%);
             }
 
             .sidebar.active {
@@ -372,29 +466,106 @@
                 margin-left: 0;
             }
 
+            .menu-toggle {
+                display: block;
+            }
+
+            .top-bar {
+                padding: 12px 15px;
+            }
+
+            .top-bar h5 {
+                font-size: 1rem;
+            }
+
+            .user-details,
+            .logout-btn-desktop {
+                display: none;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .content-area {
+                padding: 20px 15px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
             .stats-container {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
             }
 
             .management-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .management-card {
+                padding: 25px;
+            }
+
+            #scrollTopBtn {
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+                bottom: 20px;
+                right: 20px;
             }
         }
-
-        /* Loading animation */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .user-logout-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            margin: 5px 0;
+            transition: all 0.3s;
         }
 
-        .loading {
-            animation: pulse 1.5s ease-in-out infinite;
+        .user-info-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+        
+        .logout-btn-sidebar {
+            width: auto; /* Không full width nữa, chỉ đủ nội dung */
+            padding: 8px 15px; /* Padding nhỏ hơn để fit ngang */
+            background: rgba(255, 107, 107, 0.2);
+            color: rgb(255, 255, 255);
+            border: 1px solid rgba(255, 107, 107, 0.5);
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn-sidebar:hover {
+            background: rgba(252, 33, 33, 0.3);
+            border-color: #f34646;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header" onclick="window.location.href='../patient/homepage.html'">
             <h4><i class="fas fa-hospital-alt"></i> Eden Admin</h4>
             <p>Hệ thống quản trị</p>
@@ -442,29 +613,34 @@
                     <span>Quản lý tài khoản</span>
                 </a>
             </li>
+            <li>
+                <li class="user-logout-item">
+                    <div class="user-info-sidebar">
+                        <div class="user-avatar">A</div>                
+                        <div class="user-details">
+                        </div>
+                    </div>
+                    <button class="logout-btn-sidebar" onclick="if(confirm('Bạn có chắc muốn đăng xuất?')) alert('Đã đăng xuất!')">
+                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                    </button>
+                </li>
+            </li>
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
         <div class="top-bar">
-            <h5><i class="fas fa-chart-line me-2"></i>Dashboard - Tổng quan hệ thống</h5>
-            <div class="user-info">
-                <div>
-                    <div style="font-weight: 600; font-size: 0.9rem;">Admin</div>
-                    <div style="font-size: 0.8rem; color: #666;">Quản trị viên</div>
-                </div>
-                <div class="user-avatar">A</div>
-                <button class="logout-btn" onclick="if(confirm('Bạn có chắc muốn đăng xuất?')) alert('Đã đăng xuất!')">
-                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+            <div class="top-bar-left">
+                <h5><i class="fas fa-chart-line me-2"></i>Dashboard</h5>
+            </div>
+            <div class="top-bar-right">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Content Area -->
         <div class="content-area">
-            <!-- Statistics Section -->
             <h3 class="section-title">Thống kê tổng quan</h3>
             
             <div class="stats-container">
@@ -513,7 +689,6 @@
                 </div>
             </div>
 
-            <!-- Management Section -->
             <div class="management-section">
                 <h3 class="section-title">Quản lý</h3>
                 
@@ -600,76 +775,63 @@
         </div>
     </div>
 
-    <!-- Nút lên đầu trang -->
-    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-    style="
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #667eea;
-        color: white;
-        border: none;
-        font-size: 26px;
-        font-weight: bold;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-        z-index: 9999;
-    ">
-    <span style="transform: translateY(-2px);">▲</span>
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span>▲</span>
     </button>
-
-    <script>
-    // Hiện nút khi cuộn xuống
-    window.onscroll = function() {
-        const btn = document.getElementById('scrollTopBtn');
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = 'flex';
-        } else {
-            btn.style.display = 'none';
-        }
-    };
-
-    // Hiệu ứng hover
-    document.getElementById('scrollTopBtn').onmouseover = function() {
-        this.style.backgroundColor = '#0056b3';
-        this.style.transform = 'scale(1.1)';
-    };
-    document.getElementById('scrollTopBtn').onmouseout = function() {
-        this.style.backgroundColor = '#007bff';
-        this.style.transform = 'scale(1)';
-    };
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Thống kê tổng quan
-        async function loadStatistics() {
-        fetch('http://localhost/DO_AN_1/code_doan1/src/backend/api/admin/statistics.php')
-            .then(response => response.json())
-            .then(data => {
-            animateNumber('totalAppointments', data.appointments);
-            animateNumber('totalPatients', data.patients);
-            animateNumber('totalDoctors', data.doctors);
-            animateNumber('totalDepartments', data.departments);
-            })
-            .catch(error => {
-            console.error('Lỗi:', error);
-            document.querySelectorAll('#totalAppointments, #totalPatients, #totalDoctors, #totalDepartments')
-                .forEach(el => el.textContent = 'Lỗi');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+        });
+
+        mobileOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        });
+
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    mobileOverlay.classList.remove('active');
+                }
             });
+        });
+
+        window.onscroll = function() {
+            const btn = document.getElementById('scrollTopBtn');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btn.style.display = 'flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        };
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('http://localhost/DO_AN_1/code_doan1/src/backend/api/admin/statistics-dashboard.php');
+                const data = await response.json();
+                
+                animateNumber('totalAppointments', data.appointments);
+                animateNumber('totalPatients', data.patients);
+                animateNumber('totalDoctors', data.doctors);
+                animateNumber('totalDepartments', data.departments);
+            } catch (error) {
+                console.error('Lỗi:', error);
+                document.querySelectorAll('#totalAppointments, #totalPatients, #totalDoctors, #totalDepartments')
+                    .forEach(el => {
+                        el.textContent = 'Lỗi';
+                        el.classList.remove('loading');
+                    });
+            }
         }
 
-        // Gọi hàm khi trang load
-        //window.onload = loadStatistics;
-
-        
         function animateNumber(elementId, targetNumber) {
             const element = document.getElementById(elementId);
             element.classList.remove('loading');
@@ -690,9 +852,6 @@
             }, stepTime);
         }
 
-        // Load data when page loads
-        document.addEventListener('DOMContentLoaded', loadStatistics);
-
         function showAlert(type, message) {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
@@ -703,11 +862,10 @@
             `;
             
             document.body.appendChild(alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+            setTimeout(() => alertDiv.remove(), 5000);
         }
+
+        document.addEventListener('DOMContentLoaded', loadStatistics);
     </script>
 </body>
 </html>

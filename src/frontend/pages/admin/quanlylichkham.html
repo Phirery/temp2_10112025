@@ -203,8 +203,8 @@
 
         .custom-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
+            border-collapse: collapse;
+            border-spacing: 0px;
         }
 
         .custom-table thead th {
@@ -449,6 +449,23 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .custom-table th:nth-child(1) { width: 15%; }  /* Bệnh nhân */
+
+        .custom-table th:nth-child(2) { width: 15%; }  /* Bác sĩ */
+
+        .custom-table th:nth-child(3) { width: 9%; }  /* Ngày khám */
+
+        .custom-table th:nth-child(4) { width: 5%; }  /* Ca khám */
+
+        .custom-table th:nth-child(5) { width: 10%; }  /* Suất khám */
+
+        .custom-table th:nth-child(6) { width: 10%; }  /* Gói khám */
+
+        .custom-table th:nth-child(7) { width: 5%; }   /* Trạng thái */
+
+        .custom-table th:nth-child(8) { width: 15%; }  /* Thao tác */
+
     </style>
 </head>
 <body>
@@ -558,7 +575,6 @@
                     <table class="custom-table">
                         <thead>
                             <tr>
-                                <th>Mã lịch</th>
                                 <th>Bệnh nhân</th>
                                 <th>Bác sĩ</th>
                                 <th>Ngày khám</th>
@@ -715,7 +731,7 @@
             showLoading(true);
             
             try {
-                const response = await fetch(`${API_BASE}/get-appointments.php`);
+                const response = await fetch(`${API_BASE}/get-all-appointments.php`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -763,7 +779,6 @@
             
             tbody.innerHTML = pageData.map(apt => `
                 <tr>
-                    <td><strong>${apt.maLichKham}</strong></td>
                     <td>
                         <i class="fas fa-user-injured me-2 text-primary"></i>
                         ${apt.tenBenhNhan || 'N/A'}
@@ -854,7 +869,7 @@
                 if (dateFrom && apt.ngayKham < dateFrom) match = false;
                 if (dateTo && apt.ngayKham > dateTo) match = false;
                 if (search) {
-                    const searchFields = `${apt.tenBenhNhan} ${apt.tenBacSi} ${apt.maLichKham}`.toLowerCase();
+                    const searchFields = `${apt.tenBenhNhan} ${apt.tenBacSi}`.toLowerCase();
                     if (!searchFields.includes(search)) match = false;
                 }
                 

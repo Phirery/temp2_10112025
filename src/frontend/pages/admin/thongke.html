@@ -22,7 +22,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
@@ -80,7 +79,6 @@
             font-size: 1.1rem;
         }
 
-        /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
@@ -102,7 +100,6 @@
             padding: 30px;
         }
 
-        /* Filter Bar */
         .filter-bar {
             background: white;
             border-radius: 12px;
@@ -171,7 +168,6 @@
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
 
-        /* Summary Cards */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -187,6 +183,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .summary-card:hover {
@@ -261,15 +258,9 @@
             gap: 5px;
         }
 
-        .summary-change.up {
-            color: #28a745;
-        }
+        .summary-change.up { color: #28a745; }
+        .summary-change.down { color: #dc3545; }
 
-        .summary-change.down {
-            color: #dc3545;
-        }
-
-        /* Chart Containers */
         .chart-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -332,12 +323,10 @@
             height: 350px;
         }
 
-        /* Full Width Chart */
         .chart-full {
             grid-column: 1 / -1;
         }
 
-        /* Table Section */
         .table-container {
             background: white;
             border-radius: 12px;
@@ -378,29 +367,6 @@
             background: #f8fbff;
         }
 
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .status-badge.confirmed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-badge.pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-badge.cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Loading */
         .loading {
             text-align: center;
             padding: 50px;
@@ -413,7 +379,36 @@
             border-width: 0.3rem;
         }
 
-        /* Responsive */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            font-size: 26px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 9999;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        #scrollTopBtn span {
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .chart-row {
                 grid-template-columns: 1fr;
@@ -432,7 +427,6 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <h4><i class="fas fa-hospital-alt"></i> Eden Admin</h4>
@@ -449,21 +443,15 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
         <div class="top-bar">
             <h5><i class="fas fa-chart-bar me-2"></i>Thống Kê & Báo Cáo</h5>
-            <div>
-                <button class="btn btn-sm btn-outline-danger" onclick="window.location.href='dashboard.html'">
-                    <i class="fas fa-arrow-left me-2"></i>Quay lại
-                </button>
-            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </button>
         </div>
 
-        <!-- Content Area -->
         <div class="content-area">
-            <!-- Filter Bar -->
             <div class="filter-bar">
                 <div class="filter-group">
                     <label><i class="fas fa-calendar me-2"></i>Khoảng thời gian:</label>
@@ -488,67 +476,50 @@
                 </button>
             </div>
 
-            <!-- Summary Cards -->
             <div class="summary-cards">
                 <div class="summary-card appointments" onclick="scrollToSection('chartsContainer')">
-                    <div class="summary-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
+                    <div class="summary-icon"><i class="fas fa-calendar-check"></i></div>
                     <div class="summary-number" id="totalAppointments">0</div>
                     <div class="summary-label">Lịch khám</div>
                     <div class="summary-change up" id="appointmentChange">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>0%</span>
+                        <i class="fas fa-arrow-up"></i><span>0%</span>
                     </div>
                 </div>
 
                 <div class="summary-card patients" onclick="scrollToSection('chartsContainer')">
-                    <div class="summary-icon">
-                        <i class="fas fa-user-injured"></i>
-                    </div>
+                    <div class="summary-icon"><i class="fas fa-user-injured"></i></div>
                     <div class="summary-number" id="totalPatients">0</div>
                     <div class="summary-label">Bệnh nhân</div>
                     <div class="summary-change up" id="patientChange">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>0%</span>
+                        <i class="fas fa-arrow-up"></i><span>0%</span>
                     </div>
                 </div>
 
                 <div class="summary-card revenue">
-                    <div class="summary-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
+                    <div class="summary-icon"><i class="fas fa-dollar-sign"></i></div>
                     <div class="summary-number" id="totalRevenue">0đ</div>
-                    <div class="summary-label">Doanh thu (ước tính)</div>
+                    <div class="summary-label">Doanh thu thực tế</div>
                     <div class="summary-change up" id="revenueChange">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>0%</span>
+                        <i class="fas fa-arrow-up"></i><span>0%</span>
                     </div>
                 </div>
 
                 <div class="summary-card doctors" onclick="scrollToSection('top10')">
-                    <div class="summary-icon">
-                        <i class="fas fa-user-md"></i>
-                    </div>
+                    <div class="summary-icon"><i class="fas fa-user-md"></i></div>
                     <div class="summary-number" id="totalDoctors">0</div>
                     <div class="summary-label">Bác sĩ hoạt động</div>
                     <div class="summary-change up" id="doctorChange">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>0%</span>
+                        <i class="fas fa-arrow-up"></i><span>0%</span>
                     </div>
                 </div>
             </div>
 
             <div id="loadingIndicator" class="loading" style="display: none;">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <div class="spinner-border text-primary"></div>
                 <p class="mt-3">Đang tải dữ liệu thống kê...</p>
             </div>
 
-            <!-- Charts Row 1 -->
             <div class="chart-row" id="chartsContainer">
-                <!-- Biểu đồ lịch khám -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <h5 class="chart-title">Thống kê lịch khám</h5>
@@ -566,10 +537,9 @@
                     </div>
                 </div>
 
-                <!-- Biểu đồ bệnh nhân -->
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h5 class="chart-title">Thống kê bệnh nhân mới</h5>
+                        <h5 class="chart-title">Thống kê bệnh nhân</h5>
                         <div class="chart-type-toggle">
                             <button class="chart-type-btn active" onclick="changeChartType('patients', 'line')">
                                 <i class="fas fa-chart-line"></i>
@@ -585,9 +555,7 @@
                 </div>
             </div>
 
-            <!-- Charts Row 2 -->
             <div class="chart-row">
-                <!-- Biểu đồ khoa -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <h5 class="chart-title">Lịch khám theo khoa</h5>
@@ -605,7 +573,6 @@
                     </div>
                 </div>
 
-                <!-- Biểu đồ trạng thái -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <h5 class="chart-title">Trạng thái lịch khám</h5>
@@ -624,7 +591,25 @@
                 </div>
             </div>
 
-            <!-- Full Width Chart -->
+            <div class="chart-row">
+                <div class="chart-container chart-full">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Xu hướng doanh thu thực tế</h5>
+                        <div class="chart-type-toggle">
+                            <button class="chart-type-btn active" onclick="changeChartType('revenueActual', 'line')">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                            <button class="chart-type-btn" onclick="changeChartType('revenueActual', 'bar')">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueActualChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <div class="chart-row">
                 <div class="chart-container chart-full">
                     <div class="chart-header">
@@ -644,7 +629,6 @@
                 </div>
             </div>
 
-            <!-- Top Doctors Table -->
             <div class="table-container" id="top10">
                 <div class="table-header">
                     <h5 class="chart-title">Top 10 bác sĩ có nhiều lịch khám nhất</h5>
@@ -661,89 +645,36 @@
                                 <th class="text-center">Tỷ lệ hoàn thành</th>
                             </tr>
                         </thead>
-                        <tbody id="topDoctorsTable">
-                            <!-- Data will be inserted here -->
-                        </tbody>
+                        <tbody id="topDoctorsTable"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Nút lên đầu trang -->
-    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-    style="
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #667eea;
-        color: white;
-        border: none;
-        font-size: 26px;
-        font-weight: bold;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-        z-index: 9999;
-    ">
-    <span style="transform: translateY(-2px);">▲</span>
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span>▲</span>
     </button>
-
-    <script>
-    // Hiện nút khi cuộn xuống
-    window.onscroll = function() {
-        const btn = document.getElementById('scrollTopBtn');
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = 'flex';
-        } else {
-            btn.style.display = 'none';
-        }
-    };
-
-    // Hiệu ứng hover
-    document.getElementById('scrollTopBtn').onmouseover = function() {
-        this.style.backgroundColor = '#0056b3';
-        this.style.transform = 'scale(1.1)';
-    };
-    document.getElementById('scrollTopBtn').onmouseout = function() {
-        this.style.backgroundColor = '#007bff';
-        this.style.transform = 'scale(1)';
-    };
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // API Configuration
         const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/admin';
-        
+
         let currentFilter = 'month';
         let charts = {};
         let statsData = null;
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadStatistics();
         });
 
-        // Change Time Filter
         function changeTimeFilter(filter) {
             currentFilter = filter;
-            
-            // Update button states
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn' + filter.charAt(0).toUpperCase() + filter.slice(1)).classList.add('active');
-            
-            // Reload data
             loadStatistics();
         }
 
-        // Apply Custom Date
         function applyCustomDate() {
             const dateFrom = document.getElementById('dateFrom').value;
             const dateTo = document.getElementById('dateTo').value;
@@ -762,7 +693,6 @@
             loadStatistics(dateFrom, dateTo);
         }
 
-        // Load Statistics
         async function loadStatistics(dateFrom = null, dateTo = null) {
             document.getElementById('loadingIndicator').style.display = 'block';
             document.getElementById('chartsContainer').style.display = 'none';
@@ -785,7 +715,7 @@
                     alert('Không thể tải dữ liệu: ' + data.message);
                 }
             } catch (error) {
-                console.error('Error loading statistics:', error);
+                console.error('Error:', error);
                 showAlert('error', 'Lỗi kết nối đến server');
             } finally {
                 document.getElementById('loadingIndicator').style.display = 'none';
@@ -793,18 +723,14 @@
             }
         }
 
-        // Update Summary Cards
         function updateSummaryCards(summary) {
-            //document.getElementById('totalAppointments').textContent = summary.appointments.toLocaleString('vi-VN');
-            //document.getElementById('totalPatients').textContent = summary.patients.toLocaleString('vi-VN');
-            //document.getElementById('totalRevenue').textContent = (summary.revenue || 0).toLocaleString('vi-VN') + 'đ';
-            //document.getElementById('totalDoctors').textContent = summary.doctors.toLocaleString('vi-VN');
             animateNumber('totalAppointments', summary.appointments);
             animateNumber('totalPatients', summary.patients);
-            animateNumber('totalRevenue', (summary.revenue || 0));
             animateNumber('totalDoctors', summary.doctors);
             
-            // Update change percentages
+            const revenueEl = document.getElementById('totalRevenue');
+            animateNumber('totalRevenue', summary.revenueActual);
+            
             updateChangeIndicator('appointmentChange', summary.appointmentChange || 0);
             updateChangeIndicator('patientChange', summary.patientChange || 0);
             updateChangeIndicator('revenueChange', summary.revenueChange || 0);
@@ -814,39 +740,24 @@
         function updateChangeIndicator(elementId, change) {
             const element = document.getElementById(elementId);
             const isUp = change >= 0;
-            
             element.className = 'summary-change ' + (isUp ? 'up' : 'down');
-            element.innerHTML = `
-                <i class="fas fa-arrow-${isUp ? 'up' : 'down'}"></i>
-                <span>${Math.abs(change).toFixed(1)}%</span>
-            `;
+            element.innerHTML = `<i class="fas fa-arrow-${isUp ? 'up' : 'down'}"></i><span>${Math.abs(change).toFixed(1)}%</span>`;
         }
 
-        // Create All Charts
         function createCharts(data) {
-            // Destroy existing charts
             Object.values(charts).forEach(chart => {
                 if (chart) chart.destroy();
             });
             charts = {};
             
-            // Appointments Chart
             createAppointmentsChart(data.appointmentsTrend);
-            
-            // Patients Chart
             createPatientsChart(data.patientsTrend);
-            
-            // Departments Chart
             createDepartmentsChart(data.departmentsData);
-            
-            // Status Chart
             createStatusChart(data.statusData);
-            
-            // Revenue Chart
             createRevenueChart(data.revenueTrend);
+            createRevenueActualChart(data.revenueTrendActual);
         }
 
-        // Appointments Chart
         function createAppointmentsChart(data) {
             const ctx = document.getElementById('appointmentsChart');
             charts.appointments = new Chart(ctx, {
@@ -864,24 +775,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    }
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // Patients Chart
         function createPatientsChart(data) {
             const ctx = document.getElementById('patientsChart');
             charts.patients = new Chart(ctx, {
@@ -889,7 +788,7 @@
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Bệnh nhân mới',
+                        label: 'Bệnh nhân khám',
                         data: data.values,
                         borderColor: 'rgba(0, 174, 239, 1)',
                         backgroundColor: 'rgba(0, 174, 239, 0.1)',
@@ -901,24 +800,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    }
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // Departments Chart
         function createDepartmentsChart(data) {
             const ctx = document.getElementById('departmentsChart');
             charts.departments = new Chart(ctx, {
@@ -926,6 +813,7 @@
                 data: {
                     labels: data.labels,
                     datasets: [{
+                        label: 'Số lịch khám',
                         data: data.values,
                         backgroundColor: [
                             'rgba(102, 126, 234, 0.8)',
@@ -943,27 +831,23 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
-                        }
-                    }
+                    plugins: { legend: { position: 'right' } }
                 }
             });
         }
 
-        // Status Chart
         function createStatusChart(data) {
             const ctx = document.getElementById('statusChart');
             charts.status = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Đã xác nhận', 'Chờ xác nhận', 'Đã hủy'],
+                    labels: ['Đã đặt', 'Chờ', 'Hoàn thành', 'Đã hủy'],
                     datasets: [{
-                        data: [data.confirmed, data.pending, data.cancelled],
+                        data: [data.confirmed, data.pending, data.completed, data.cancelled],
                         backgroundColor: [
-                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(0, 174, 239, 0.8)',
                             'rgba(255, 193, 7, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
                             'rgba(220, 53, 69, 0.8)'
                         ],
                         borderWidth: 2,
@@ -973,16 +857,11 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
+                    plugins: { legend: { position: 'bottom' } }
                 }
             });
         }
 
-        // Revenue Chart
         function createRevenueChart(data) {
             const ctx = document.getElementById('revenueChart');
             charts.revenue = new Chart(ctx, {
@@ -990,7 +869,37 @@
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Doanh thu (VNĐ)',
+                        label: 'Doanh thu ước tính (VNĐ)',
+                        data: data.values,
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, position: 'top' } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: function(value) { return Math.floor(value).toLocaleString('vi-VN') + 'đ'; } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createRevenueActualChart(data) {
+            const ctx = document.getElementById('revenueActualChart');
+            charts.revenueActual = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Doanh thu thực tế (VNĐ)',
                         data: data.values,
                         borderColor: 'rgba(40, 167, 69, 1)',
                         backgroundColor: 'rgba(40, 167, 69, 0.1)',
@@ -1002,41 +911,37 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
+                    plugins: { legend: { display: true, position: 'top' } },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString('vi-VN') + 'đ';
-                                }
-                            }
+                            ticks: { callback: function(value) { return Math.floor(value).toLocaleString('vi-VN') + 'đ'; } }
                         }
                     }
                 }
             });
         }
 
-        // Change Chart Type
         function changeChartType(chartName, type) {
             if (!charts[chartName]) return;
             
-            // Update button states
             const container = charts[chartName].canvas.closest('.chart-container');
             container.querySelectorAll('.chart-type-btn').forEach(btn => btn.classList.remove('active'));
             event.target.closest('.chart-type-btn').classList.add('active');
             
-            // Update chart type
             charts[chartName].config.type = type;
+            
+            if (type === 'bar' && chartName === 'departments') {
+                charts[chartName].options.plugins.legend.display = true;
+                charts[chartName].options.plugins.legend.position = 'top';
+            } else if (type === 'doughnut' && chartName === 'departments') {
+                charts[chartName].options.plugins.legend.display = true;
+                charts[chartName].options.plugins.legend.position = 'right';
+            }
+            
             charts[chartName].update();
         }
 
-        // Update Top Doctors Table
         function updateTopDoctorsTable(doctors) {
             const tbody = document.getElementById('topDoctorsTable');
             
@@ -1068,8 +973,8 @@
                         <td class="text-center">
                             <div class="progress" style="height: 25px;">
                                 <div class="progress-bar bg-success" role="progressbar" 
-                                     style="width: ${completionRate}%;" 
-                                     aria-valuenow="${completionRate}" aria-valuemin="0" aria-valuemax="100">
+                                    style="width: ${completionRate}%;" 
+                                    aria-valuenow="${completionRate}" aria-valuemin="0" aria-valuemax="100">
                                     ${completionRate}%
                                 </div>
                             </div>
@@ -1079,7 +984,6 @@
             }).join('');
         }
 
-        // Export Report
         function exportReport() {
             const filterText = {
                 'week': 'Tuần này',
@@ -1089,7 +993,6 @@
                 'custom': 'Tùy chỉnh'
             }[currentFilter];
             
-            // Show export options
             const format = prompt('Chọn định dạng xuất:\n1. PDF\n2. Excel\n3. CSV\n\nNhập số (1-3):');
             
             if (!format) return;
@@ -1115,7 +1018,6 @@
                     return;
             }
             
-            // Create download link
             const dateFrom = document.getElementById('dateFrom').value;
             const dateTo = document.getElementById('dateTo').value;
             
@@ -1124,7 +1026,6 @@
                 url += `&dateFrom=${dateFrom}&dateTo=${dateTo}`;
             }
             
-            // Download file
             const link = document.createElement('a');
             link.href = url;
             link.download = filename;
@@ -1135,27 +1036,8 @@
             alert(`Đang xuất báo cáo ${filterText} dạng ${format === '1' ? 'PDF' : format === '2' ? 'Excel' : 'CSV'}...`);
         }
 
-        function showAlert(type, message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
-        }
-
-        //Animation Number
         function animateNumber(elementId, targetNumber) {
             const element = document.getElementById(elementId);
-            element.classList.remove('loading');
-            
             let currentNumber = 0;
             const increment = targetNumber / 50;
             const duration = 1000;
@@ -1164,18 +1046,42 @@
             const timer = setInterval(() => {
                 currentNumber += increment;
                 if (currentNumber >= targetNumber) {
-                    element.textContent = targetNumber.toLocaleString('vi-VN');
+                    element.textContent = Math.floor(targetNumber).toLocaleString('vi-VN');
+                    if (elementId === 'totalRevenue') {
+                        element.textContent += 'đ';
+                    }
                     clearInterval(timer);
                 } else {
                     element.textContent = Math.floor(currentNumber).toLocaleString('vi-VN');
+                    if (elementId === 'totalRevenue') {
+                        element.textContent += 'đ';
+                    }
                 }
             }, stepTime);
         }
-    </script>
-    <script>
+
         function scrollToSection(id) {
             document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
         }
+
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+    </script>
+    <script>
+        window.onscroll = function() {
+            const btn = document.getElementById('scrollTopBtn');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btn.style.display = 'flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>

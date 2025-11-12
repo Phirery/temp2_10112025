@@ -63,6 +63,36 @@
             transition: all 0.3s;
         }
 
+        .pagination-container {
+            display: flex;
+            justify-content: space-between; /* Trái - phải */
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0; /* đường gạch mảnh phía trên */
+        }
+
+        .pagination {
+            margin: 0;
+        }
+
+        .page-link {
+            color: var(--primary-purple);  /* tím đồng bộ giao diện */
+            border: 1px solid #dee2e6;
+            margin: 0 3px;
+            border-radius: 6px;
+        }
+
+        .page-link:hover {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-purple);
+            border-color: var(--primary-purple);
+        }
+
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
             background: rgba(255, 255, 255, 0.15);
@@ -227,6 +257,8 @@
 
         .custom-table {
             width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0px;
         }
 
         .custom-table thead th {
@@ -240,12 +272,14 @@
         }
 
         .custom-table tbody tr {
-            border-bottom: 1px solid #f0f0f0;
-            transition: all 0.3s;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;   
         }
 
         .custom-table tbody tr:hover {
-            background: #f8fbff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .custom-table tbody td {
@@ -503,6 +537,15 @@
                         <tbody id="accountTableBody"></tbody>
                     </table>
                 </div>
+
+                <div class="pagination-container">
+                    <div class="text-muted" id="recordInfo">
+                        Hiển thị 0 - 0 của 0 bản ghi
+                    </div>
+                    <nav>
+                        <ul class="pagination" id="paginationContainer"></ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
@@ -660,6 +703,8 @@
     <script>
         const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/admin';
 
+        let currentPage = 1;
+        const itemsPerPage = 10;
         let allAccounts = [];
         let filteredAccounts = [];
         let currentRoleFilter = 'all';
@@ -736,7 +781,10 @@
 
         function displayAccounts() {
             const tbody = document.getElementById('accountTableBody');
-            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredAccounts.slice(start, end);
+
             if (filteredAccounts.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Không có tài khoản nào</td></tr>';
                 return;
@@ -777,6 +825,55 @@
                     </tr>
                 `;
             }).join('');
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredAccounts.length / itemsPerPage);
+            const container = document.getElementById('paginationContainer');
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, filteredAccounts.length);
+            
+            document.getElementById('recordInfo').textContent = 
+                `Hiển thị ${start} - ${end} của ${filteredAccounts.length} bản ghi`;
+            
+            let html = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                    </li>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+            
+            html += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredAccounts.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                displayAccounts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         function filterByRole(role) {
