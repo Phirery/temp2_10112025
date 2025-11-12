@@ -450,7 +450,58 @@
         .loading {
             animation: pulse 1.5s ease-in-out infinite;
         }
+        .user-info-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+        .logout-btn-sidebar {
+            width: auto;
+            padding: 8px 15px;
+            background: #00b3ff;
+            color: rgb(255, 255, 255);
+            border: 1px solid #1f79ae;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
 
+        .logout-btn-sidebar:hover {
+            background: #0a95d0;
+            border-color: #0096ec;
+        }
+        .logout-header {    
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .logout-btn-desktop {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .logout-btn-desktop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px #b7a3cb;
+        }
+        .user-logout-item {
+            display: none;
+        }
         @media (max-width: 768px) {
             .sidebar {
                 right: 0;
@@ -522,43 +573,17 @@
                 bottom: 20px;
                 right: 20px;
             }
-        }
-        .user-logout-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            margin: 5px 0;
-            transition: all 0.3s;
-        }
-
-        .user-info-sidebar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: none;
-            padding: 0;
-            border-radius: 0;
-            margin-bottom: 0;
-        }
-        
-        .logout-btn-sidebar {
-            width: auto; /* Không full width nữa, chỉ đủ nội dung */
-            padding: 8px 15px; /* Padding nhỏ hơn để fit ngang */
-            background: rgba(255, 107, 107, 0.2);
-            color: rgb(255, 255, 255);
-            border: 1px solid rgba(255, 107, 107, 0.5);
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .logout-btn-sidebar:hover {
-            background: rgba(252, 33, 33, 0.3);
-            border-color: #f34646;
+            .logout-header {
+                display: none;
+            }
+            .user-logout-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 20px;
+                margin: 5px 0;
+                transition: all 0.3s;
+            }
         }
     </style>
 </head>
@@ -613,17 +638,15 @@
                     <span>Quản lý tài khoản</span>
                 </a>
             </li>
-            <li>
-                <li class="user-logout-item">
-                    <div class="user-info-sidebar">
-                        <div class="user-avatar">A</div>                
-                        <div class="user-details">
-                        </div>
+            <li class="user-logout-item">
+                <div class="user-info-sidebar">
+                    <div class="user-avatar">A</div>                
+                    <div class="user-details">
                     </div>
-                    <button class="logout-btn-sidebar" onclick="if(confirm('Bạn có chắc muốn đăng xuất?')) alert('Đã đăng xuất!')">
-                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                    </button>
-                </li>
+                </div>
+                <button class="logout-btn-sidebar">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                </button>
             </li>
         </ul>
     </div>
@@ -636,6 +659,12 @@
             <div class="top-bar-right">
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="logout-header">
+                <div class="user-avatar">A</div>
+                <button class="logout-btn-desktop">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                 </button>
             </div>
         </div>
