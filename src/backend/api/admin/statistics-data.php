@@ -2,13 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-// Kết nối database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "datlichkham";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli("localhost", "root", "", "datlichkham");
 $conn->set_charset("utf8mb4");
 
 if ($conn->connect_error) {
@@ -16,37 +10,22 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Lấy tham số
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'month';
-$dateFrom = isset($_GET['dateFrom']) ? $_GET['dateFrom'] : null;
-$dateTo = isset($_GET['dateTo']) ? $_GET['dateTo'] : null;
+$filter = $_GET['filter'] ?? 'month';
+$dateFrom = $_GET['dateFrom'] ?? null;
+$dateTo = $_GET['dateTo'] ?? null;
 
-// Xác định khoảng thời gian
 $dateCondition = getDateCondition($filter, $dateFrom, $dateTo);
 $previousDateCondition = getPreviousDateCondition($filter, $dateFrom, $dateTo);
 
-// 1. SUMMARY DATA
 $summary = getSummaryData($conn, $dateCondition, $previousDateCondition);
-
-// 2. APPOINTMENTS TREND
 $appointmentsTrend = getAppointmentsTrend($conn, $filter, $dateCondition);
-
-// 3. PATIENTS TREND
 $patientsTrend = getPatientsTrend($conn, $filter, $dateCondition);
-
-// 4. DEPARTMENTS DATA
 $departmentsData = getDepartmentsData($conn, $dateCondition);
-
-// 5. STATUS DATA
 $statusData = getStatusData($conn, $dateCondition);
-
-// 6. REVENUE TREND
 $revenueTrend = getRevenueTrend($conn, $filter, $dateCondition);
-
-// 7. TOP DOCTORS
+$revenueTrendActual = getRevenueTrendActual($conn, $filter, $dateCondition);
 $topDoctors = getTopDoctors($conn, $dateCondition);
 
-// Trả về JSON
 echo json_encode([
     'success' => true,
     'data' => [
@@ -56,100 +35,93 @@ echo json_encode([
         'departmentsData' => $departmentsData,
         'statusData' => $statusData,
         'revenueTrend' => $revenueTrend,
+        'revenueTrendActual' => $revenueTrendActual,
         'topDoctors' => $topDoctors
     ]
 ], JSON_UNESCAPED_UNICODE);
 
 $conn->close();
 
-// ===================== HELPER FUNCTIONS =====================
-
 function getDateCondition($filter, $dateFrom, $dateTo) {
-    $today = date('Y-m-d');
-    
     switch($filter) {
         case 'week':
-            $startOfWeek = date('Y-m-d', strtotime('monday this week'));
-            return "ngayKham >= '$startOfWeek'";
-            
+            return "ngayKham >= '" . date('Y-m-d', strtotime('monday this week')) . "'";
         case 'month':
-            $startOfMonth = date('Y-m-01');
-            return "ngayKham >= '$startOfMonth'";
-            
+            return "ngayKham >= '" . date('Y-m-01') . "'";
         case 'year':
-            $startOfYear = date('Y-01-01');
-            return "ngayKham >= '$startOfYear'";
-            
+            return "ngayKham >= '" . date('Y-01-01') . "'";
         case 'custom':
-            if ($dateFrom && $dateTo) {
-                return "ngayKham BETWEEN '$dateFrom' AND '$dateTo'";
-            }
-            return "1=1";
-            
-        case 'all':
+            return $dateFrom && $dateTo ? "ngayKham BETWEEN '$dateFrom' AND '$dateTo'" : "1=1";
         default:
             return "1=1";
     }
 }
 
 function getPreviousDateCondition($filter, $dateFrom, $dateTo) {
-    $today = date('Y-m-d');
-    
     switch($filter) {
         case 'week':
-            $startOfLastWeek = date('Y-m-d', strtotime('monday last week'));
-            $endOfLastWeek = date('Y-m-d', strtotime('sunday last week'));
-            return "ngayKham BETWEEN '$startOfLastWeek' AND '$endOfLastWeek'";
-            
+            $start = date('Y-m-d', strtotime('monday last week'));
+            $end = date('Y-m-d', strtotime('sunday last week'));
+            return "ngayKham BETWEEN '$start' AND '$end'";
         case 'month':
-            $startOfLastMonth = date('Y-m-01', strtotime('first day of last month'));
-            $endOfLastMonth = date('Y-m-t', strtotime('last day of last month'));
-            return "ngayKham BETWEEN '$startOfLastMonth' AND '$endOfLastMonth'";
-            
+            $start = date('Y-m-01', strtotime('first day of last month'));
+            $end = date('Y-m-t', strtotime('last day of last month'));
+            return "ngayKham BETWEEN '$start' AND '$end'";
         case 'year':
-            $lastYear = date('Y') - 1;
-            return "YEAR(ngayKham) = $lastYear";
-            
+            return "YEAR(ngayKham) = " . (date('Y') - 1);
         default:
             return "1=1";
     }
 }
 
 function getSummaryData($conn, $dateCondition, $previousDateCondition) {
-    // Current period
     $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE $dateCondition");
     $currentAppointments = $result->fetch_assoc()['count'];
     
-    // Previous period
     $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE $previousDateCondition");
     $previousAppointments = $result->fetch_assoc()['count'];
     
     $appointmentChange = $previousAppointments > 0 
-        ? (($currentAppointments - $previousAppointments) / $previousAppointments) * 100 
-        : 0;
+        ? (($currentAppointments - $previousAppointments) / $previousAppointments) * 100 : 0;
     
-    // Patients
     $result = $conn->query("SELECT COUNT(*) as count FROM benhnhan");
     $totalPatients = $result->fetch_assoc()['count'];
     
-    // Doctors
     $result = $conn->query("SELECT COUNT(*) as count FROM bacsi");
     $totalDoctors = $result->fetch_assoc()['count'];
     
-    // Revenue (ước tính: mỗi lịch khám = 500,000 VNĐ)
-    $revenue = $currentAppointments * 150000;
-    $previousRevenue = $previousAppointments * 150000;
+    $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+            FROM lichkham lk 
+            LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+            WHERE lk.trangThai = 'Hoàn thành' AND $dateCondition";
+    $result = $conn->query($sql);
+    $revenueActual = (int)$result->fetch_assoc()['total'];
+    
+    $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+            FROM lichkham lk 
+            LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+            WHERE lk.trangThai != 'Hủy' AND $dateCondition";
+    $result = $conn->query($sql);
+    $revenueEstimated = (int)$result->fetch_assoc()['total'];
+    
+    $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+            FROM lichkham lk 
+            LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+            WHERE lk.trangThai != 'Hủy' AND $previousDateCondition";
+    $result = $conn->query($sql);
+    $previousRevenue = $result->fetch_assoc()['total'];
+    
     $revenueChange = $previousRevenue > 0 
-        ? (($revenue - $previousRevenue) / $previousRevenue) * 100 
-        : 0;
+        ? (($revenueEstimated - $previousRevenue) / $previousRevenue) * 100 : 0;
     
     return [
         'appointments' => $currentAppointments,
         'patients' => $totalPatients,
         'doctors' => $totalDoctors,
-        'revenue' => $revenue,
+        'revenueActual' => $revenueActual,
+        'revenueEstimated' => $revenueEstimated,
         'appointmentChange' => round($appointmentChange, 1),
-        'patientChange' => 0, // Giả lập
+        'patientChange' => 0,
         'revenueChange' => round($revenueChange, 1)
     ];
 }
@@ -159,39 +131,28 @@ function getAppointmentsTrend($conn, $filter, $dateCondition) {
     $values = [];
     
     if ($filter == 'week') {
-        // 7 ngày gần nhất
         for ($i = 6; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-$i days"));
-            $dayName = date('l', strtotime($date));
-            $dayNames = [
-                'Monday' => 'T2', 'Tuesday' => 'T3', 'Wednesday' => 'T4',
-                'Thursday' => 'T5', 'Friday' => 'T6', 'Saturday' => 'T7', 'Sunday' => 'CN'
-            ];
-            $labels[] = $dayNames[$dayName];
-            
+            $dayNames = ['Monday'=>'T2','Tuesday'=>'T3','Wednesday'=>'T4','Thursday'=>'T5','Friday'=>'T6','Saturday'=>'T7','Sunday'=>'CN'];
+            $labels[] = $dayNames[date('l', strtotime($date))];
             $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE ngayKham = '$date'");
             $values[] = (int)$result->fetch_assoc()['count'];
         }
     } elseif ($filter == 'month') {
-        // 4 tuần trong tháng
         for ($i = 3; $i >= 0; $i--) {
             $labels[] = "Tuần " . (4 - $i);
             $startDate = date('Y-m-d', strtotime("-" . ($i * 7) . " days"));
             $endDate = date('Y-m-d', strtotime("-" . ($i * 7 - 6) . " days"));
-            
             $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE ngayKham BETWEEN '$endDate' AND '$startDate'");
             $values[] = (int)$result->fetch_assoc()['count'];
         }
     } elseif ($filter == 'year') {
-        // 12 tháng trong năm
-        $currentYear = date('Y');
         for ($i = 1; $i <= 12; $i++) {
             $labels[] = "T" . $i;
-            $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE YEAR(ngayKham) = $currentYear AND MONTH(ngayKham) = $i");
+            $result = $conn->query("SELECT COUNT(*) as count FROM lichkham WHERE YEAR(ngayKham) = ".date('Y')." AND MONTH(ngayKham) = $i");
             $values[] = (int)$result->fetch_assoc()['count'];
         }
     } else {
-        // Toàn bộ - theo năm
         $result = $conn->query("SELECT YEAR(ngayKham) as year, COUNT(*) as count FROM lichkham GROUP BY YEAR(ngayKham) ORDER BY year");
         while($row = $result->fetch_assoc()) {
             $labels[] = "Năm " . $row['year'];
@@ -199,44 +160,47 @@ function getAppointmentsTrend($conn, $filter, $dateCondition) {
         }
     }
     
-    return [
-        'labels' => $labels,
-        'values' => $values
-    ];
+    return ['labels' => $labels, 'values' => $values];
 }
 
 function getPatientsTrend($conn, $filter, $dateCondition) {
-    // Giả lập dữ liệu (vì không có trường ngày tạo trong bảng benhnhan)
     $labels = [];
     $values = [];
     
     if ($filter == 'week') {
+        $sql = "SELECT DATE(ngayKham) as date, COUNT(DISTINCT maBenhNhan) as count 
+                FROM lichkham 
+                WHERE ngayKham >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+                GROUP BY DATE(ngayKham)
+                ORDER BY date";
+        $result = $conn->query($sql);
+        $data = [];
+        while($row = $result->fetch_assoc()) {
+            $data[$row['date']] = $row['count'];
+        }
         for ($i = 6; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-$i days"));
-            $dayName = date('l', strtotime($date));
-            $dayNames = [
-                'Monday' => 'T2', 'Tuesday' => 'T3', 'Wednesday' => 'T4',
-                'Thursday' => 'T5', 'Friday' => 'T6', 'Saturday' => 'T7', 'Sunday' => 'CN'
-            ];
-            $labels[] = $dayNames[$dayName];
-            $values[] = rand(5, 20); // Giả lập
+            $dayNames = ['Monday'=>'T2','Tuesday'=>'T3','Wednesday'=>'T4','Thursday'=>'T5','Friday'=>'T6','Saturday'=>'T7','Sunday'=>'CN'];
+            $labels[] = $dayNames[date('l', strtotime($date))];
+            $values[] = isset($data[$date]) ? (int)$data[$date] : 0;
         }
     } elseif ($filter == 'month') {
         for ($i = 3; $i >= 0; $i--) {
             $labels[] = "Tuần " . (4 - $i);
-            $values[] = rand(30, 80);
+            $endDate = date('Y-m-d', strtotime("-" . ($i * 7 - 6) . " days"));
+            $startDate = date('Y-m-d', strtotime("-" . ($i * 7) . " days"));
+            $result = $conn->query("SELECT COUNT(DISTINCT maBenhNhan) as count FROM lichkham WHERE ngayKham BETWEEN '$endDate' AND '$startDate'");
+            $values[] = (int)$result->fetch_assoc()['count'];
         }
     } else {
         for ($i = 1; $i <= 12; $i++) {
             $labels[] = "T" . $i;
-            $values[] = rand(100, 300);
+            $result = $conn->query("SELECT COUNT(DISTINCT maBenhNhan) as count FROM lichkham WHERE YEAR(ngayKham) = ".date('Y')." AND MONTH(ngayKham) = $i");
+            $values[] = (int)$result->fetch_assoc()['count'];
         }
     }
     
-    return [
-        'labels' => $labels,
-        'values' => $values
-    ];
+    return ['labels' => $labels, 'values' => $values];
 }
 
 function getDepartmentsData($conn, $dateCondition) {
@@ -251,7 +215,6 @@ function getDepartmentsData($conn, $dateCondition) {
             LIMIT 7";
     
     $result = $conn->query($sql);
-    
     $labels = [];
     $values = [];
     
@@ -260,19 +223,16 @@ function getDepartmentsData($conn, $dateCondition) {
         $values[] = (int)$row['count'];
     }
     
-    return [
-        'labels' => $labels,
-        'values' => $values
-    ];
+    return ['labels' => $labels, 'values' => $values];
 }
 
 function getStatusData($conn, $dateCondition) {
     $sql = "SELECT 
-                SUM(CASE WHEN trangThai = 'confirmed' THEN 1 ELSE 0 END) as confirmed,
-                SUM(CASE WHEN trangThai = 'pending' THEN 1 ELSE 0 END) as pending,
-                SUM(CASE WHEN trangThai = 'cancelled' THEN 1 ELSE 0 END) as cancelled
-            FROM lichkham
-            WHERE $dateCondition";
+                SUM(CASE WHEN trangThai = 'Đã đặt' THEN 1 ELSE 0 END) as confirmed,
+                SUM(CASE WHEN trangThai = 'Chờ' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN trangThai = 'Hoàn thành' THEN 1 ELSE 0 END) as completed,
+                SUM(CASE WHEN trangThai = 'Hủy' THEN 1 ELSE 0 END) as cancelled
+            FROM lichkham WHERE $dateCondition";
     
     $result = $conn->query($sql);
     $data = $result->fetch_assoc();
@@ -280,31 +240,65 @@ function getStatusData($conn, $dateCondition) {
     return [
         'confirmed' => (int)$data['confirmed'],
         'pending' => (int)$data['pending'],
+        'completed' => (int)$data['completed'],
         'cancelled' => (int)$data['cancelled']
     ];
 }
 
 function getRevenueTrend($conn, $filter, $dateCondition) {
     $appointmentsTrend = getAppointmentsTrend($conn, $filter, $dateCondition);
+    $values = array_map(function($count) { return $count * 150000; }, $appointmentsTrend['values']);
+    return ['labels' => $appointmentsTrend['labels'], 'values' => $values];
+}
+
+function getRevenueTrendActual($conn, $filter, $dateCondition) {
+    $labels = [];
+    $values = [];
     
-    // Doanh thu = Số lịch khám * 150,000 VNĐ
-    $values = array_map(function($count) {
-        return $count * 150000;
-    }, $appointmentsTrend['values']);
+    if ($filter == 'week') {
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $dayNames = ['Monday'=>'T2','Tuesday'=>'T3','Wednesday'=>'T4','Thursday'=>'T5','Friday'=>'T6','Saturday'=>'T7','Sunday'=>'CN'];
+            $labels[] = $dayNames[date('l', strtotime($date))];
+            $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+                    FROM lichkham lk 
+                    LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+                    WHERE lk.trangThai = 'Hoàn thành' AND lk.ngayKham = '$date'";
+            $result = $conn->query($sql);
+            $values[] = (int)$result->fetch_assoc()['total'];
+        }
+    } elseif ($filter == 'month') {
+        for ($i = 3; $i >= 0; $i--) {
+            $labels[] = "Tuần " . (4 - $i);
+            $startDate = date('Y-m-d', strtotime("-" . ($i * 7) . " days"));
+            $endDate = date('Y-m-d', strtotime("-" . ($i * 7 - 6) . " days"));
+            $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+                    FROM lichkham lk 
+                    LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+                    WHERE lk.trangThai = 'Hoàn thành' AND lk.ngayKham BETWEEN '$endDate' AND '$startDate'";
+            $result = $conn->query($sql);
+            $values[] = (int)$result->fetch_assoc()['total'];
+        }
+    } else {
+        for ($i = 1; $i <= 12; $i++) {
+            $labels[] = "T" . $i;
+            $sql = "SELECT COALESCE(SUM(gk.gia), 0) as total 
+                    FROM lichkham lk 
+                    LEFT JOIN goikham gk ON lk.maGoi = gk.maGoi 
+                    WHERE lk.trangThai = 'Hoàn thành' AND YEAR(lk.ngayKham) = ".date('Y')." AND MONTH(lk.ngayKham) = $i";
+            $result = $conn->query($sql);
+            $values[] = (int)$result->fetch_assoc()['total'];
+        }
+    }
     
-    return [
-        'labels' => $appointmentsTrend['labels'],
-        'values' => $values
-    ];
+    return ['labels' => $labels, 'values' => $values];
 }
 
 function getTopDoctors($conn, $dateCondition) {
     $sql = "SELECT 
-                bs.maBacSi,
-                bs.tenBacSi,
-                ck.tenChuyenKhoa,
+                bs.maBacSi, bs.tenBacSi, ck.tenChuyenKhoa,
                 COUNT(lk.maLichKham) as total,
-                SUM(CASE WHEN lk.trangThai = 'confirmed' THEN 1 ELSE 0 END) as completed
+                SUM(CASE WHEN lk.trangThai = 'Hoàn thành' THEN 1 ELSE 0 END) as completed
             FROM bacsi bs
             LEFT JOIN chuyenkhoa ck ON bs.maChuyenKhoa = ck.maChuyenKhoa
             LEFT JOIN lichkham lk ON bs.maBacSi = lk.maBacSi AND $dateCondition
@@ -314,7 +308,6 @@ function getTopDoctors($conn, $dateCondition) {
             LIMIT 10";
     
     $result = $conn->query($sql);
-    
     $doctors = [];
     while($row = $result->fetch_assoc()) {
         $doctors[] = [
@@ -325,7 +318,6 @@ function getTopDoctors($conn, $dateCondition) {
             'completed' => (int)$row['completed']
         ];
     }
-    
     return $doctors;
 }
 ?>
