@@ -1,6 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+CREATE DATABASE datlichkham;
 
 CREATE TABLE `bacsi` (
   `nguoiDungId` int(11) NOT NULL,
@@ -289,5 +287,3 @@ ALTER TABLE `quantrivien`
 
 ALTER TABLE `suatkham`
   ADD CONSTRAINT `suatkham_ibfk_1` FOREIGN KEY (`maCa`) REFERENCES `calamviec` (`maCa`);
-COMMIT;
-
