@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Bác Sĩ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --primary-purple: #667eea;
+            --secondary-purple: #764ba2;
+            --primary-blue: #00AEEF;
+            --sidebar-width: 260px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,206 +22,300 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 10%, #f8f9fa 100%);
             min-height: 100vh;
         }
 
-        /* === Navbar === */
-        .custom-primary-color {
-            color: #764ba2 !important;
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .custom-accent-color {
-            color: #D57E7E !important;
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
         }
 
-        .navbar-brand .custom-accent-color {
-            font-size: 1.5em;
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s;
         }
 
-        .navbar-custom {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            padding: 15px 0;
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .navbar-custom.scrolled {
-            padding: 10px 0;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .sidebar-header h4 {
             font-weight: 700;
-            color: #667eea !important;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin: 5px 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
             transition: all 0.3s;
         }
 
-        .navbar-brand:hover {
-            transform: scale(1.05);
-            color: #764ba2 !important;
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid white;
+            padding-left: 16px;
         }
 
-        .nav-link {
-            color: #333 !important;
-            font-weight: 500;
-            margin: 0 10px;
-            position: relative;
-            transition: all 0.3s;
+        .sidebar-menu a i {
+            width: 25px;
+            margin-right: 12px;
+            font-size: 1.1rem;
         }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: all 0.3s;
-            transform: translateX(-50%);
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s;
         }
 
-        .nav-link:hover {
-            color: #667eea !important;
-            transform: translateY(-2px);
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 998;
         }
 
-        .nav-link:hover::after {
-            width: 80%;
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .btn-logout {
-            padding: 8px 25px;
-            border-radius: 25px;
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .top-bar h5 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-purple);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .user-info-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn-sidebar {
+            padding: 8px 15px;
+            background: #00b3ff;
+            color: white;
+            border: 1px solid #1f79ae;
+            border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s;
-            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn-sidebar:hover {
+            background: #0a95d0;
+        }
+
+        .logout-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn-desktop {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
         }
 
-        .btn-logout:hover {
+        .logout-btn-desktop:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            color: white;
+            box-shadow: 0 5px 15px #b7a3cb;
         }
 
-        /* === Sidebar === */
-        .sidebar {
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            min-height: calc(100vh - 76px);
-            padding: 30px 0;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+        .user-logout-item {
+            display: none;
         }
 
-        .sidebar h4 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 700;
-            padding: 0 20px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            padding: 15px 25px;
-            margin: 5px 15px;
-            border-radius: 10px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-
-        /* === Main Content === */
-        .main-content {
+        .content-area {
             padding: 30px;
         }
 
-        /* === Stats Cards === */
         .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
 
-        .stat-mini-card {
+        .stat-card {
             background: white;
-            padding: 20px;
             border-radius: 12px;
+            padding: 20px;
             box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            text-align: center;
             transition: all 0.3s;
-            border-left: 4px solid;
+            text-align: center;
         }
 
-        .stat-mini-card:hover {
+        .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
 
-        .stat-mini-card.total { border-left-color: #3498db; }
-        .stat-mini-card.pending { border-left-color: #f39c12; }
-        .stat-mini-card.completed { border-left-color: #2ecc71; }
-        .stat-mini-card.cancelled { border-left-color: #e74c3c; }
+        .stat-card.total {
+            border-left: 4px solid #3498db;
+        }
 
-        .stat-mini-card h3 {
-            margin: 0;
+        .stat-card.pending {
+            border-left: 4px solid #f39c12;
+        }
+
+        .stat-card.completed {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .stat-card.cancelled {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(0, 174, 239, 0.1));
+            color: var(--primary-purple);
+        }
+
+        .stat-number {
             font-size: 2rem;
             font-weight: 700;
             color: #667eea;
         }
 
-        .stat-mini-card p {
-            margin: 5px 0 0 0;
+        .stat-label {
             color: #666;
             font-weight: 500;
+            margin-top: 5px;
         }
 
-        /* === Section Cards === */
         .section-card {
             background: white;
-            padding: 25px;
             border-radius: 15px;
+            padding: 25px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
-        .section-card h5 {
+        .card-header h5 {
             color: #667eea;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .section-card h5 .badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            font-weight: 600;
         }
 
         .filter-bar {
             background: #f6f9fc;
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 24px;
+            margin: 20px 0;
         }
 
         .search-box {
@@ -265,7 +365,6 @@
             padding: 18px 20px;
             border-radius: 10px;
             transition: all 0.2s;
-            cursor: pointer;
         }
 
         .patient-item:hover {
@@ -288,7 +387,7 @@
             border-radius: 6px;
             font-weight: 700;
             font-size: 0.9rem;
-            min-width: 60px;
+            min-width: 100px;
             text-align: center;
         }
 
@@ -299,20 +398,20 @@
             flex: 1;
         }
 
-        .visit-badge {
+        .status-badge {
             padding: 5px 12px;
             border-radius: 6px;
             font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .badge-new {
-            background: linear-gradient(135deg, #4caf50, #66bb6a);
+        .status-booked {
+            background: #ffc107;
             color: white;
         }
 
-        .badge-revisit {
-            background: linear-gradient(135deg, #ff9800, #ffa726);
+        .status-completed {
+            background: #28a745;
             color: white;
         }
 
@@ -322,17 +421,13 @@
             gap: 20px;
             color: #8898aa;
             font-size: 0.9rem;
-            padding-left: 76px;
+            padding-left: 116px;
         }
 
         .patient-details span {
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .patient-details i {
-            color: #adb5bd;
         }
 
         .btn-action {
@@ -342,6 +437,7 @@
             font-size: 0.85rem;
             transition: all 0.2s;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-view {
@@ -352,7 +448,6 @@
         .btn-view:hover {
             background: #1976d2;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
         }
 
         .btn-complete {
@@ -363,29 +458,61 @@
         .btn-complete:hover {
             background: #388e3c;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
 
-        .schedule-item {
-            padding: 15px;
-            background: #f8f9ff;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s;
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
         }
 
-        .schedule-item:hover {
-            background: #eef2ff;
-            transform: translateX(5px);
+        .pagination {
+            margin: 0;
         }
 
-        .schedule-item strong {
-            color: #667eea;
+        .page-link {
+            color: var(--primary-purple);
+            border: 1px solid #dee2e6;
+            margin: 0 3px;
+            border-radius: 6px;
         }
 
-        .schedule-item small {
-            color: #999;
+        .page-link:hover {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-purple);
+            border-color: var(--primary-purple);
+        }
+
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            font-size: 26px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+            z-index: 997;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
         }
 
         .empty-state {
@@ -400,310 +527,482 @@
             opacity: 0.3;
         }
 
-        /* === Animations === */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .main-content > * {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* === Responsive === */
         @media (max-width: 768px) {
             .sidebar {
-                min-height: auto;
+                right: 0;
+                left: auto;
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .top-bar {
+                padding: 12px 15px;
+            }
+
+            .top-bar h5 {
+                font-size: 1rem;
+            }
+
+            .user-details,
+            .logout-btn-desktop {
+                display: none;
+            }
+
+            .content-area {
+                padding: 20px 15px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
             }
 
             .patient-details {
                 flex-wrap: wrap;
                 padding-left: 0;
             }
+
+            .logout-header {
+                display: none;
+            }
+
+            .user-logout-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 20px;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container-fluid container-xl">
-            <a class="navbar-brand fw-bold fs-4" href="#">
-                <i class="fas fa-clinic-medical me-2 custom-accent-color"></i>
-                <span class="custom-primary-color">Eden</span> Health
-            </a>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="ri-notification-3-line"></i> Thông báo <span class="badge bg-danger">5</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="ri-mail-line"></i> Tin nhắn</a>
-                    </li>
-                    <li class="nav-item">
-                        <button class="btn btn-logout"><i class="ri-logout-box-line"></i> Đăng xuất</button>
-                    </li>
-                </ul>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header" onclick="window.location.href='../patient/homepage.html'">
+            <h4><i class="fas fa-user-md"></i> Eden Doctor</h4>
+            <p>Hệ thống bác sĩ</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="lichkham.html"><i class="fas fa-calendar-check"></i> Lịch khám</a></li>
+            <li><a href="benhnhan.html"><i class="fas fa-user-injured"></i> Bệnh nhân</a></li>
+            <li><a href="hosobenhan.html"><i class="fas fa-file-medical"></i> Hồ sơ bệnh án</a></li>
+            <li><a href="thongbao.html"><i class="fas fa-bell"></i> Thông báo <span class="badge bg-danger ms-2" id="notifBadge">5</span></a></li>
+            <li class="user-logout-item">
+                <div class="user-info-sidebar">
+                    <div class="user-avatar">BS</div>
+                </div>
+                <button class="logout-btn-sidebar" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <h5><i class="fas fa-chart-line me-2"></i>Dashboard</h5>
+            </div>
+            <div class="logout-header">
+                <div class="user-avatar">BS</div>
+                <div class="user-details">
+                    <div class="user-name" id="doctorName">Đang tải...</div>
+                </div>
+                <button class="logout-btn-desktop" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                </button>
             </div>
         </div>
-    </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-2 col-md-3 sidebar">
-                <h4><i class="ri-stethoscope-line"></i> Bác Sĩ</h4>
-                <a href="dashboard.html" class="active"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="lichkham.html"><i class="ri-calendar-check-line"></i> Lịch khám</a>
-                <a href="benhnhan.html"><i class="ri-user-heart-line"></i> Bệnh nhân</a>
-                <a href="#"><i class="ri-file-list-3-line"></i> Hồ sơ bệnh án</a>
-                <a href="#"><i class="ri-settings-3-line"></i> Cài đặt</a>
+        <div class="content-area">
+            <div class="stats-row">
+                <div class="stat-card total">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-number" id="totalPatients">0</div>
+                    <div class="stat-label">Tổng bệnh nhân</div>
+                </div>
+                <div class="stat-card pending">
+                    <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="stat-number" id="todayCount">0</div>
+                    <div class="stat-label">Lịch hôm nay</div>
+                </div>
+                <div class="stat-card completed">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-number" id="completedCount">0</div>
+                    <div class="stat-label">Đã hoàn thành</div>
+                </div>
+                <div class="stat-card cancelled">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">Chờ khám</div>
+                </div>
             </div>
 
-            <!-- Main content -->
-            <div class="col-lg-10 col-md-9 main-content">
-                <!-- Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h3 style="color: #667eea; font-weight: 700;"><i class="ri-dashboard-line"></i> Dashboard Bác Sĩ</h3>
-                        <p style="color: #666;">Tổng quan hoạt động khám bệnh</p>
-                    </div>
+            <div class="section-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar-alt me-2"></i>Lịch khám hôm nay <span class="badge bg-primary" id="totalToday">0</span></h5>
                 </div>
-
-                <!-- Stats Row -->
-                <div class="row stats-row">
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stat-mini-card total">
-                            <h3 id="totalCount">0</h3>
-                            <p>Tổng bệnh nhân</p>
+                
+                <div class="filter-bar">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Tìm bệnh nhân...">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stat-mini-card pending">
-                            <h3 id="newCount">0</h3>
-                            <p>Khám mới</p>
+                        <div class="col-md-3">
+                            <select class="form-select" id="shiftFilter">
+                                <option value="">Tất cả ca</option>
+                                <option value="1">Ca sáng</option>
+                                <option value="2">Ca chiều</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stat-mini-card completed">
-                            <h3 id="revisitCount">0</h3>
-                            <p>Tái khám</p>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="Đã đặt">Đã đặt</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stat-mini-card cancelled">
-                            <h3 id="todayCount">0</h3>
-                            <p>Lịch hôm nay</p>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter me-1"></i>Lọc
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="section-card">
-                            <h5>
-                                <i class="ri-user-heart-line"></i> 
-                                Danh sách bệnh nhân hôm nay
-                                <span class="badge bg-primary" id="totalPatients">0</span>
-                            </h5>
+                <div id="loadingIndicator" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-3">Đang tải...</p>
+                </div>
 
-                            <div class="filter-bar">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="search-box">
-                                            <i class="fas fa-search"></i>
-                                            <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm bệnh nhân...">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="form-select" id="visitTypeFilter">
-                                            <option value="">Tất cả loại khám</option>
-                                            <option value="new">Khám mới</option>
-                                            <option value="revisit">Tái khám</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="form-select" id="statusFilter">
-                                            <option value="">Tất cả trạng thái</option>
-                                            <option value="scheduled">Đã đặt lịch</option>
-                                            <option value="completed">Hoàn thành</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="patient-list" id="patientList"></div>
 
-                            <div class="patient-list" id="patientListContainer"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <div class="section-card">
-                            <h5><i class="ri-calendar-line"></i> Lịch tuần này</h5>
-                            <div class="schedule-item">
-                                <strong>Thứ 2</strong> - 08:00 - 11:00<br>
-                                <small>Khám nội tổng hợp</small>
-                            </div>
-                            <div class="schedule-item">
-                                <strong>Thứ 3</strong> - 14:00 - 17:00<br>
-                                <small>Khám tim mạch</small>
-                            </div>
-                            <div class="schedule-item">
-                                <strong>Thứ 4</strong> - 08:00 - 11:00<br>
-                                <small>Khám thần kinh</small>
-                            </div>
-                            <div class="schedule-item">
-                                <strong>Thứ 5</strong> - 14:00 - 17:00<br>
-                                <small>Họp chuyên môn khoa</small>
-                            </div>
-                            <div class="schedule-item">
-                                <strong>Thứ 6</strong> - Nghỉ<br>
-                                <small>Không có lịch</small>
-                            </div>
-                        </div>
-                    </div>
+                <div class="pagination-container">
+                    <div class="text-muted" id="recordInfo">Hiển thị 0 - 0 của 0 lịch</div>
+                    <nav><ul class="pagination" id="paginationContainer"></ul></nav>
                 </div>
             </div>
         </div>
     </div>
 
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span>▲</span>
+    </button>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar-custom');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+        const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/doctor';
+
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let allAppointments = [];
+        let filteredAppointments = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDoctorInfo();
+            loadStatistics();
+            loadTodayAppointments();
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                mobileOverlay.classList.toggle('active');
+            });
+
+            mobileOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+            });
+
+            window.onscroll = () => {
+                const btn = document.getElementById('scrollTopBtn');
+                btn.style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? 'flex' : 'none';
+            };
         });
 
-        const patientsData = [
-            { id: 1, name: 'Nguyễn Văn An', age: 34, gender: 'Nam', visits: 1, status: 'scheduled', packageName: 'Tổng quát', time: '08:30' },
-            { id: 2, name: 'Trần Thị Bình', age: 28, gender: 'Nữ', visits: 3, status: 'completed', packageName: 'Tim mạch', time: '09:00' },
-            { id: 3, name: 'Lê Văn Cường', age: 45, gender: 'Nam', visits: 5, status: 'scheduled', packageName: 'Tổng quát', time: '09:30' },
-            { id: 4, name: 'Phạm Thị Dung', age: 31, gender: 'Nữ', visits: 2, status: 'scheduled', packageName: 'Thần kinh', time: '10:00' },
-            { id: 5, name: 'Hoàng Văn Em', age: 52, gender: 'Nam', visits: 7, status: 'completed', packageName: 'Tim mạch', time: '07:30' },
-            { id: 6, name: 'Vũ Thị Phượng', age: 29, gender: 'Nữ', visits: 1, status: 'scheduled', packageName: 'Nhi khoa', time: '10:30' },
-            { id: 7, name: 'Đặng Văn Giang', age: 38, gender: 'Nam', visits: 4, status: 'cancelled', packageName: 'Tổng quát', time: '11:00' },
-            { id: 8, name: 'Mai Thị Hoa', age: 26, gender: 'Nữ', visits: 2, status: 'completed', packageName: 'Thần kinh', time: '07:00' },
-        ];
-
-        let filteredData = [...patientsData];
-
-        function updateStats() {
-            const total = patientsData.length;
-            const newPatients = patientsData.filter(p => p.visits === 1).length;
-            const revisitPatients = patientsData.filter(p => p.visits > 1).length;
-            const today = patientsData.length;
-
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('newCount').textContent = newPatients;
-            document.getElementById('revisitCount').textContent = revisitPatients;
-            document.getElementById('todayCount').textContent = today;
-        }
-
-        function getVisitBadge(visits) {
-            if (visits === 1) {
-                return '<span class="visit-badge badge-new"><i class="fas fa-star me-1"></i>Khám mới</span>';
-            } else {
-                return `<span class="visit-badge badge-revisit"><i class="fas fa-redo me-1"></i>Tái khám lần ${visits}</span>`;
+        async function loadDoctorInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/get-doctor-info.php`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('doctorName').textContent = data.data.tenBacSi;
+                }
+            } catch (error) {
+                console.error('Error:', error);
             }
         }
 
-        function renderPatients() {
-            const container = document.getElementById('patientListContainer');
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/get-statistics.php`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    animateNumber('totalPatients', data.data.totalPatients);
+                    animateNumber('todayCount', data.data.todayCount);
+                    animateNumber('completedCount', data.data.completedCount);
+                    animateNumber('pendingCount', data.data.pendingCount);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadTodayAppointments() {
+            showLoading(true);
             
-            if (filteredData.length === 0) {
+            try {
+                const response = await fetch(`${API_BASE}/get-today-appointments.php`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    allAppointments = data.data;
+                    filteredAppointments = [...allAppointments];
+                    displayAppointments();
+                } else {
+                    showError(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Lỗi kết nối server');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayAppointments() {
+            const container = document.getElementById('patientList');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredAppointments.slice(start, end);
+            
+            document.getElementById('totalToday').textContent = filteredAppointments.length;
+            
+            if (pageData.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-user-slash"></i>
-                        <p>Không tìm thấy bệnh nhân</p>
+                        <i class="fas fa-calendar-times"></i>
+                        <p>Không có lịch khám</p>
                     </div>
                 `;
-                document.getElementById('totalPatients').textContent = '0';
                 return;
             }
-
-            container.innerHTML = filteredData.map(patient => `
-                <div class="patient-item" onclick="viewPatient(${patient.id})">
+            
+            container.innerHTML = pageData.map(apt => `
+                <div class="patient-item">
                     <div class="patient-header">
-                        <div class="time-badge">${patient.time}</div>
-                        <div class="patient-name">${patient.name}</div>
-                        ${getVisitBadge(patient.visits)}
+                        <div class="time-badge">${apt.tenCa} - ${apt.gioBatDau.substring(0,5)}</div>
+                        <div class="patient-name">${apt.tenBenhNhan}</div>
+                        <span class="status-badge ${apt.trangThai === 'Hoàn thành' ? 'status-completed' : 'status-booked'}">
+                            ${apt.trangThai}
+                        </span>
                         <div class="ms-auto d-flex gap-2">
-                            <button class="btn-action btn-view" onclick="event.stopPropagation(); viewPatient(${patient.id})">
+                            <button class="btn-action btn-view" onclick="viewAppointment(${apt.maLichKham})">
                                 <i class="fas fa-eye me-1"></i>Xem
                             </button>
-                            ${patient.status === 'scheduled' ? `
-                            <button class="btn-action btn-complete" onclick="event.stopPropagation(); completeExam(${patient.id})">
+                            ${apt.trangThai === 'Đã đặt' ? `
+                            <button class="btn-action btn-complete" onclick="completeAppointment(${apt.maLichKham})">
                                 <i class="fas fa-check me-1"></i>Hoàn thành
                             </button>` : ''}
                         </div>
                     </div>
                     <div class="patient-details">
-                        <span><i class="fas fa-birthday-cake"></i>${patient.age} tuổi</span>
-                        <span><i class="fas fa-venus-mars"></i>${patient.gender}</span>
-                        <span><i class="fas fa-box-open"></i>${patient.packageName}</span>
+                        <span><i class="fas fa-venus-mars"></i>${apt.gioiTinh}</span>
+                        <span><i class="fas fa-birthday-cake"></i>${calculateAge(apt.ngaySinh)} tuổi</span>
+                        <span><i class="fas fa-box-open"></i>${apt.tenGoi}</span>
                     </div>
                 </div>
             `).join('');
+            
+            updatePagination();
+        }
 
-            document.getElementById('totalPatients').textContent = filteredData.length;
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+            const container = document.getElementById('paginationContainer');
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, filteredAppointments.length);
+            
+            document.getElementById('recordInfo').textContent = 
+                `Hiển thị ${start} - ${end} của ${filteredAppointments.length} lịch`;
+            
+            let html = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                    </li>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+            
+            html += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                displayAppointments();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const visitType = document.getElementById('visitTypeFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const shift = document.getElementById('shiftFilter').value;
             const status = document.getElementById('statusFilter').value;
-
-            filteredData = patientsData.filter(patient => {
-                const matchesSearch = patient.name.toLowerCase().includes(searchTerm);
+            
+            filteredAppointments = allAppointments.filter(apt => {
+                let match = true;
                 
-                let matchesVisitType = true;
-                if (visitType === 'new') matchesVisitType = patient.visits === 1;
-                else if (visitType === 'revisit') matchesVisitType = patient.visits > 1;
-
-                const matchesStatus = !status || patient.status === status;
-
-                return matchesSearch && matchesVisitType && matchesStatus;
+                if (search && !apt.tenBenhNhan.toLowerCase().includes(search)) match = false;
+                if (shift && apt.maCa != shift) match = false;
+                if (status && apt.trangThai !== status) match = false;
+                
+                return match;
             });
-
-            renderPatients();
+            
+            currentPage = 1;
+            displayAppointments();
         }
 
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('visitTypeFilter').addEventListener('change', applyFilters);
-        document.getElementById('statusFilter').addEventListener('change', applyFilters);
-
-        function viewPatient(id) {
-            const patient = patientsData.find(p => p.id === id);
-            if (patient) {
-                alert(`Chi tiết bệnh nhân:\n\nTên: ${patient.name}\nTuổi: ${patient.age}\nGiới tính: ${patient.gender}\nGói khám: ${patient.packageName}\nLần khám: ${patient.visits}\nTrạng thái: ${patient.status}`);
+        async function viewAppointment(maLichKham) {
+            const apt = allAppointments.find(a => a.maLichKham === maLichKham);
+            if (apt) {
+                alert(`Thông tin lịch khám:\n\nBệnh nhân: ${apt.tenBenhNhan}\nGiới tính: ${apt.gioiTinh}\nTuổi: ${calculateAge(apt.ngaySinh)}\nCa: ${apt.tenCa}\nGiờ: ${apt.gioBatDau}\nGói khám: ${apt.tenGoi}\nTrạng thái: ${apt.trangThai}`);
             }
         }
 
-        function completeExam(id) {
-            const patient = patientsData.find(p => p.id === id);
-            if (patient && confirm(`Xác nhận hoàn thành khám cho: ${patient.name}?`)) {
-                patient.status = 'completed';
-                applyFilters();
-                alert('Đã cập nhật trạng thái thành công!');
+        async function completeAppointment(maLichKham) {
+            const apt = allAppointments.find(a => a.maLichKham === maLichKham);
+            if (!apt || !confirm(`Xác nhận hoàn thành khám cho: ${apt.tenBenhNhan}?`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/complete-appointment.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ maLichKham })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'Đã cập nhật trạng thái thành công!');
+                    loadStatistics();
+                    loadTodayAppointments();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('error', 'Lỗi kết nối server');
             }
         }
 
-        updateStats();
-        renderPatients();
+        function calculateAge(birthDate) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+            return age;
+        }
+
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            let currentNumber = 0;
+            const increment = targetNumber / 50;
+            const duration = 1000;
+            const stepTime = duration / 50;
+            
+            const timer = setInterval(() => {
+                currentNumber += increment;
+                if (currentNumber >= targetNumber) {
+                    element.textContent = targetNumber;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(currentNumber);
+                }
+            }, stepTime);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+            document.getElementById('patientList').style.display = show ? 'none' : 'flex';
+        }
+
+        function showError(message) {
+            document.getElementById('patientList').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        function logout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                window.location.href = '../auth/login.html';
+            }
+        }
     </script>
 </body>
 </html>
