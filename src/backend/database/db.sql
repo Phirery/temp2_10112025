@@ -113,14 +113,18 @@ CREATE TABLE `hosobenhan` (
   `maHoSo` varchar(20) NOT NULL,
   `maBenhNhan` varchar(20) DEFAULT NULL,
   `maBacSi` varchar(20) DEFAULT NULL,
+  `maLichKham` int(11) DEFAULT NULL,
   `chanDoan` text DEFAULT NULL,
   `dieuTri` text DEFAULT NULL,
+  `trangThai` enum('Chưa hoàn thành','Đã hoàn thành') DEFAULT 'Chưa hoàn thành',
+  `ngayTao` datetime DEFAULT current_timestamp(),
+  `ngayHoanThanh` datetime DEFAULT NULL,
   `ghiChu` text DEFAULT NULL,
   `ngayKham` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `hosobenhan` (`maHoSo`, `maBenhNhan`, `maBacSi`, `chanDoan`, `dieuTri`, `ghiChu`, `ngayKham`) VALUES
-('HS1', 'bn1', 'bs1', 'Tình trạng bình thường.', 'Ăn uống ngủ nghỉ hợp lý.', '', NULL);
+INSERT INTO `hosobenhan` (`maHoSo`, `maBenhNhan`, `maBacSi`, `maLichKham`, `chanDoan`, `dieuTri`, `trangThai`, `ngayTao`, `ngayHoanThanh`, `ghiChu`, `ngayKham`) VALUES
+('HS1', 'bn1', 'bs1', NULL, 'Tình trạng bình thường.', 'Ăn uống ngủ nghỉ hợp lý.', 'Chưa hoàn thành', '2025-11-14 18:05:00', NULL, '', NULL);
 
 CREATE TABLE `khoa` (
   `maKhoa` varchar(10) NOT NULL,
@@ -241,7 +245,8 @@ ALTER TABLE `goikham`
 ALTER TABLE `hosobenhan`
   ADD PRIMARY KEY (`maHoSo`),
   ADD KEY `maBenhNhan` (`maBenhNhan`),
-  ADD KEY `maBacSi` (`maBacSi`);
+  ADD KEY `maBacSi` (`maBacSi`),
+  ADD KEY `maLichKham` (`maLichKham`);
 
 ALTER TABLE `khoa`
   ADD PRIMARY KEY (`maKhoa`);
@@ -303,7 +308,8 @@ ALTER TABLE `chuyenkhoa`
 
 ALTER TABLE `hosobenhan`
   ADD CONSTRAINT `hosobenhan_ibfk_1` FOREIGN KEY (`maBenhNhan`) REFERENCES `benhnhan` (`maBenhNhan`) ON DELETE CASCADE,
-  ADD CONSTRAINT `hosobenhan_ibfk_2` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE SET NULL;
+  ADD CONSTRAINT `hosobenhan_ibfk_2` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE SET NULL,
+  ADD CONSTRAINT `hosobenhan_ibfk_3` FOREIGN KEY (`maLichKham`) REFERENCES `lichkham` (`maLichKham`) ON DELETE SET NULL;
 
 ALTER TABLE `lichkham`
   ADD CONSTRAINT `lichkham_ibfk_1` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`),
