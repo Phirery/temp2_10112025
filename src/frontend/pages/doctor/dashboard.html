@@ -136,12 +136,6 @@
             gap: 15px;
         }
 
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         .top-bar h5 {
             margin: 0;
             color: #333;
@@ -194,6 +188,11 @@
         .user-name {
             font-weight: 600;
             font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #666;
         }
 
         .user-avatar {
@@ -300,6 +299,7 @@
             padding: 25px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
+            overflow: hidden;
         }
 
         .card-header h5 {
@@ -353,31 +353,63 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
 
-        .patient-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
         }
 
-        .patient-item {
-            background: white;
-            border: 1px solid #e9ecef;
-            padding: 18px 20px;
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
-            transition: all 0.2s;
         }
 
-        .patient-item:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-            transform: translateX(4px);
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
         }
 
-        .patient-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 10px;
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .custom-table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .custom-table thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .custom-table thead th {
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .custom-table tbody tr {
+            transition: all 0.3s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .custom-table tbody tr:hover {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .custom-table tbody td {
+            padding: 15px;
+            vertical-align: middle;
         }
 
         .time-badge {
@@ -387,76 +419,69 @@
             border-radius: 6px;
             font-weight: 700;
             font-size: 0.9rem;
-            min-width: 100px;
-            text-align: center;
+            display: inline-block;
+            white-space: nowrap;
         }
 
         .patient-name {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #667eea;
-            flex: 1;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .patient-age {
+            color: #666;
+            font-size: 0.9rem;
         }
 
         .status-badge {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
         }
 
         .status-booked {
-            background: #ffc107;
-            color: white;
+            background: #fff3cd;
+            color: #856404;
         }
 
         .status-completed {
-            background: #28a745;
-            color: white;
-        }
-
-        .patient-details {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            color: #8898aa;
-            font-size: 0.9rem;
-            padding-left: 116px;
-        }
-
-        .patient-details span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            background: #d4edda;
+            color: #155724;
         }
 
         .btn-action {
-            padding: 7px 16px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             border: none;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            font-weight: 600;
+            margin: 0 3px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .btn-view {
-            background: #2196f3;
+            background: #3498db;
             color: white;
         }
 
         .btn-view:hover {
-            background: #1976d2;
+            background: #2980b9;
             transform: translateY(-2px);
         }
 
         .btn-complete {
-            background: #4caf50;
+            background: #2ecc71;
             color: white;
         }
 
         .btn-complete:hover {
-            background: #388e3c;
+            background: #27ae60;
             transform: translateY(-2px);
         }
 
@@ -515,18 +540,6 @@
             transform: scale(1.1);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 48px 20px;
-            color: #999;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-
         @media (max-width: 768px) {
             .sidebar {
                 right: 0;
@@ -563,13 +576,12 @@
                 padding: 20px 15px;
             }
 
-            .stats-row {
-                grid-template-columns: 1fr;
+            .section-card {
+                padding: 15px;
             }
 
-            .patient-details {
-                flex-wrap: wrap;
-                padding-left: 0;
+            .stats-row {
+                grid-template-columns: 1fr;
             }
 
             .logout-header {
@@ -582,6 +594,68 @@
                 justify-content: space-between;
                 padding: 12px 20px;
                 margin: 5px 0;
+            }
+
+            .table-responsive {
+                margin: 15px -15px;
+                padding: 0 15px;
+            }
+
+            .custom-table {
+                font-size: 0.85rem;
+                min-width: 600px;
+            }
+
+            .custom-table thead th,
+            .custom-table tbody td {
+                padding: 10px 8px;
+            }
+
+            .btn-action {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+                margin: 2px;
+            }
+
+            .btn-action i {
+                margin: 0;
+            }
+
+            .time-badge {
+                font-size: 0.75rem;
+                padding: 4px 6px;
+                line-height: 1.2;
+            }
+
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .patient-name {
+                font-size: 0.9rem;
+            }
+
+            .patient-age {
+                font-size: 0.8rem;
+            }
+
+            .filter-bar {
+                padding: 15px;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+
+            #recordInfo {
+                order: 2;
+            }
+
+            .pagination {
+                order: 1;
             }
         }
     </style>
@@ -599,7 +673,7 @@
             <li><a href="lichkham.html"><i class="fas fa-calendar-check"></i> Lịch khám</a></li>
             <li><a href="benhnhan.html"><i class="fas fa-user-injured"></i> Bệnh nhân</a></li>
             <li><a href="hosobenhan.html"><i class="fas fa-file-medical"></i> Hồ sơ bệnh án</a></li>
-            <li><a href="thongbao.html"><i class="fas fa-bell"></i> Thông báo <span class="badge bg-danger ms-2" id="notifBadge">5</span></a></li>
+            <li><a href="thongbao.html"><i class="fas fa-bell"></i> Thông báo <span class="badge bg-danger ms-2">5</span></a></li>
             <li class="user-logout-item">
                 <div class="user-info-sidebar">
                     <div class="user-avatar">BS</div>
@@ -692,7 +766,21 @@
                     <p class="mt-3">Đang tải...</p>
                 </div>
 
-                <div class="patient-list" id="patientList"></div>
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Giờ</th>
+                                <th>Bệnh nhân</th>
+                                <th>Giới tính</th>
+                                <th>Gói khám</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientList"></tbody>
+                    </table>
+                </div>
 
                 <div class="pagination-container">
                     <div class="text-muted" id="recordInfo">Hiển thị 0 - 0 của 0 lịch</div>
@@ -806,40 +894,38 @@
             document.getElementById('totalToday').textContent = filteredAppointments.length;
             
             if (pageData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-times"></i>
-                        <p>Không có lịch khám</p>
-                    </div>
-                `;
+                container.innerHTML = '<tr><td colspan="6" class="text-center py-5">Không có lịch khám</td></tr>';
                 return;
             }
             
-            container.innerHTML = pageData.map(apt => `
-                <div class="patient-item">
-                    <div class="patient-header">
-                        <div class="time-badge">${apt.tenCa} - ${apt.gioBatDau.substring(0,5)}</div>
-                        <div class="patient-name">${apt.tenBenhNhan}</div>
-                        <span class="status-badge ${apt.trangThai === 'Hoàn thành' ? 'status-completed' : 'status-booked'}">
-                            ${apt.trangThai}
-                        </span>
-                        <div class="ms-auto d-flex gap-2">
-                            <button class="btn-action btn-view" onclick="viewAppointment(${apt.maLichKham})">
-                                <i class="fas fa-eye me-1"></i>Xem
+            container.innerHTML = pageData.map(apt => {
+                const age = calculateAge(apt.ngaySinh);
+                const statusClass = apt.trangThai === 'Hoàn thành' ? 'status-completed' : 'status-booked';
+                const statusText = apt.trangThai === 'Hoàn thành' ? 'Đã khám' : 'Chờ khám';
+                const disabled = apt.trangThai === 'Hoàn thành';
+                
+                return `
+                    <tr>
+                        <td><span class="time-badge">${apt.tenCa}<br>${apt.gioBatDau.substring(0,5)}</span></td>
+                        <td>
+                            <div class="patient-name">${apt.tenBenhNhan}</div>
+                            <div class="patient-age">${age} tuổi</div>
+                        </td>
+                        <td>${apt.gioiTinh}</td>
+                        <td>${apt.tenGoi}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-action btn-view" onclick="viewAppointment(${apt.maLichKham})" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
                             </button>
-                            ${apt.trangThai === 'Đã đặt' ? `
-                            <button class="btn-action btn-complete" onclick="completeAppointment(${apt.maLichKham})">
-                                <i class="fas fa-check me-1"></i>Hoàn thành
+                            ${!disabled ? `
+                            <button class="btn-action btn-complete" onclick="completeAppointment(${apt.maLichKham})" title="Hoàn thành">
+                                <i class="fas fa-check"></i>
                             </button>` : ''}
-                        </div>
-                    </div>
-                    <div class="patient-details">
-                        <span><i class="fas fa-venus-mars"></i>${apt.gioiTinh}</span>
-                        <span><i class="fas fa-birthday-cake"></i>${calculateAge(apt.ngaySinh)} tuổi</span>
-                        <span><i class="fas fa-box-open"></i>${apt.tenGoi}</span>
-                    </div>
-                </div>
-            `).join('');
+                        </td>
+                    </tr>
+                `;
+            }).join('');
             
             updatePagination();
         }
@@ -913,7 +999,8 @@
         async function viewAppointment(maLichKham) {
             const apt = allAppointments.find(a => a.maLichKham === maLichKham);
             if (apt) {
-                alert(`Thông tin lịch khám:\n\nBệnh nhân: ${apt.tenBenhNhan}\nGiới tính: ${apt.gioiTinh}\nTuổi: ${calculateAge(apt.ngaySinh)}\nCa: ${apt.tenCa}\nGiờ: ${apt.gioBatDau}\nGói khám: ${apt.tenGoi}\nTrạng thái: ${apt.trangThai}`);
+                const age = calculateAge(apt.ngaySinh);
+                alert(`Thông tin lịch khám:\n\nBệnh nhân: ${apt.tenBenhNhan}\nTuổi: ${age}\nGiới tính: ${apt.gioiTinh}\nCa: ${apt.tenCa}\nGiờ: ${apt.gioBatDau}\nGói khám: ${apt.tenGoi}\nTrạng thái: ${apt.trangThai}`);
             }
         }
 
@@ -973,15 +1060,12 @@
 
         function showLoading(show) {
             document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
-            document.getElementById('patientList').style.display = show ? 'none' : 'flex';
+            document.querySelector('.table-responsive').style.display = show ? 'none' : 'block';
         }
 
         function showError(message) {
             document.getElementById('patientList').innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>${message}</p>
-                </div>
+                <tr><td colspan="6" class="text-center py-5 text-danger">${message}</td></tr>
             `;
         }
 
