@@ -9,7 +9,7 @@ CREATE TABLE `bacsi` (
   `tenBacSi` varchar(100) DEFAULT NULL,
   `maChuyenKhoa` varchar(10) DEFAULT NULL,
   `moTa` text DEFAULT NULL,
-  `chuyenGia` tinyint(1) NOT NULL DEFAULT 0
+  `chuyenGia` tinyint(1) NOT NULL DEFAULT 0 --Mặc định không dùng, coi như nó không tồn tại
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `bacsi` (`nguoiDungId`, `maBacSi`, `tenBacSi`, `maChuyenKhoa`, `moTa`, `chuyenGia`) VALUES
@@ -151,7 +151,7 @@ CREATE TABLE `lichkham` (
   `maCa` int(11) NOT NULL,
   `maSuat` int(11) NOT NULL,
   `maGoi` int(11) DEFAULT NULL,
-  `trangThai` enum('Chờ','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL,
+  `trangThai` enum('Chờ','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL, --Không dùng trạng thái "chờ", coi như nó không tồn tại
   `ghiChu` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -518,3 +518,4 @@ ALTER TABLE `thongbaoadmin`
 ALTER TABLE `thongbaolichkham`
   ADD CONSTRAINT `thongbao_ibfk_1` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE CASCADE,
   ADD CONSTRAINT `thongbao_ibfk_2` FOREIGN KEY (`maLichKham`) REFERENCES `lichkham` (`maLichKham`) ON DELETE SET NULL;
+
