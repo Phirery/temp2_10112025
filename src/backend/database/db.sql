@@ -34,7 +34,7 @@ INSERT INTO `benhnhan` (`nguoiDungId`, `maBenhNhan`, `tenBenhNhan`, `ngaySinh`, 
 DELIMITER $$
 CREATE TRIGGER `validate_birthdate_before_insert` BEFORE INSERT ON `benhnhan` FOR EACH ROW BEGIN
     IF NEW.ngaySinh > CURDATE() THEN
-        SET NEW.ngaySinh = CURDATE();  -- Set = ngày hiện tại để tuổi = 0
+        SET NEW.ngaySinh = CURDATE();
     END IF;
 END
 $$
@@ -42,7 +42,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `validate_birthdate_before_update` BEFORE UPDATE ON `benhnhan` FOR EACH ROW BEGIN
     IF NEW.ngaySinh > CURDATE() THEN
-        SET NEW.ngaySinh = CURDATE();  -- Set = ngày hiện tại để tuổi = 0
+        SET NEW.ngaySinh = CURDATE();
     END IF;
 END
 $$
@@ -163,8 +163,68 @@ INSERT INTO `lichkham` (`maLichKham`, `maBacSi`, `maBenhNhan`, `ngayKham`, `maCa
 (8, 'bs1', 'bn1', '2025-11-12', 1, 1, 1, 'Hủy', NULL),
 (9, 'BS202511090112882', 'BN202511082304701', '2025-11-12', 2, 8, 1, 'Đã đặt', NULL),
 (10, 'BS202511090112882', 'BN202511101515250', '2025-11-13', 1, 1, 2, 'Hoàn thành', NULL),
-(11, 'BS202511090112882', 'BN202511082304701', '2025-11-13', 1, 2, 1, 'Chờ', NULL),
+(11, 'BS202511090112882', 'BN202511082304701', '2025-11-15', 1, 2, 1, 'Hoàn thành', NULL),
 (12, 'BS202511090112882', 'bn1', '2025-11-13', 1, 3, 1, 'Chờ', NULL);
+DELIMITER $$
+CREATE TRIGGER `after_lichkham_insert` AFTER INSERT ON `lichkham` FOR EACH ROW BEGIN
+    DECLARE patientName VARCHAR(100);
+    DECLARE appointmentDate VARCHAR(20);
+    DECLARE shiftName VARCHAR(50);
+    
+    SELECT tenBenhNhan INTO patientName 
+    FROM benhnhan 
+    WHERE maBenhNhan = NEW.maBenhNhan;
+    
+    SELECT tenCa INTO shiftName 
+    FROM calamviec 
+    WHERE maCa = NEW.maCa;
+    
+    SET appointmentDate = DATE_FORMAT(NEW.ngayKham, '%d/%m/%Y');
+    
+    INSERT INTO thongbao (maBacSi, maLichKham, loai, tieuDe, noiDung, thoiGian, daXem)
+    VALUES (
+        NEW.maBacSi,
+        NEW.maLichKham,
+        'Đặt lịch',
+        'Lịch khám mới',
+        CONCAT('Bệnh nhân ', patientName, ' đã đặt lịch khám vào ngày ', appointmentDate, ' - ', shiftName),
+        NOW(),
+        0
+    );
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_lichkham_update` AFTER UPDATE ON `lichkham` FOR EACH ROW BEGIN
+    DECLARE patientName VARCHAR(100);
+    DECLARE appointmentDate VARCHAR(20);
+    DECLARE shiftName VARCHAR(50);
+    
+    IF NEW.trangThai = 'Hủy' AND OLD.trangThai != 'Hủy' THEN
+        SELECT tenBenhNhan INTO patientName 
+        FROM benhnhan 
+        WHERE maBenhNhan = NEW.maBenhNhan;
+        
+        SELECT tenCa INTO shiftName 
+        FROM calamviec 
+        WHERE maCa = NEW.maCa;
+        
+        SET appointmentDate = DATE_FORMAT(NEW.ngayKham, '%d/%m/%Y');
+        
+        INSERT INTO thongbao (maBacSi, maLichKham, loai, tieuDe, noiDung, thoiGian, daXem)
+        VALUES (
+            NEW.maBacSi,
+            NEW.maLichKham,
+            'Hủy lịch',
+            'Lịch khám đã hủy',
+            CONCAT('Bệnh nhân ', patientName, ' đã hủy lịch khám ngày ', appointmentDate, ' - ', shiftName),
+            NOW(),
+            0
+        );
+    END IF;
+END
+$$
+DELIMITER ;
 
 CREATE TABLE `ngaynghi` (
   `maNghi` int(11) NOT NULL,
@@ -173,6 +233,83 @@ CREATE TABLE `ngaynghi` (
   `maCa` int(11) DEFAULT NULL,
   `lyDo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `ngaynghi` (`maNghi`, `maBacSi`, `ngayNghi`, `maCa`, `lyDo`) VALUES
+(1, 'BS202511090112882', '2025-11-16', 1, '0'),
+(2, 'BS202511090112882', '2025-11-16', 2, 'thử'),
+(3, 'BS202511090112882', '2025-11-17', 1, '0'),
+(4, 'BS202511090112882', '2025-11-17', 2, '???');
+DELIMITER $$
+CREATE TRIGGER `after_ngaynghi_delete` AFTER DELETE ON `ngaynghi` FOR EACH ROW BEGIN
+    DECLARE doctorName VARCHAR(100);
+    DECLARE leaveDate VARCHAR(20);
+    DECLARE shiftName VARCHAR(50);
+    DECLARE caInfo VARCHAR(100);
+    
+    SELECT tenBacSi INTO doctorName 
+    FROM bacsi 
+    WHERE maBacSi = OLD.maBacSi;
+    
+    SET leaveDate = DATE_FORMAT(OLD.ngayNghi, '%d/%m/%Y');
+    
+    IF OLD.maCa IS NOT NULL THEN
+        SELECT tenCa INTO shiftName 
+        FROM calamviec 
+        WHERE maCa = OLD.maCa;
+        SET caInfo = CONCAT(' - ', shiftName);
+    ELSE
+        SET caInfo = ' - Cả ngày';
+    END IF;
+    
+    INSERT INTO thongbaoadmin (maNghi, maBacSi, loai, tieuDe, noiDung, thoiGian, daXem)
+    VALUES (
+        NULL,
+        OLD.maBacSi,
+        'Hủy nghỉ',
+        'Hủy đơn nghỉ phép',
+        CONCAT('Bác sĩ ', doctorName, ' đã hủy đơn nghỉ phép ngày ', leaveDate, caInfo),
+        NOW(),
+        0
+    );
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_ngaynghi_insert` AFTER INSERT ON `ngaynghi` FOR EACH ROW BEGIN
+    DECLARE doctorName VARCHAR(100);
+    DECLARE leaveDate VARCHAR(20);
+    DECLARE shiftName VARCHAR(50);
+    DECLARE caInfo VARCHAR(100);
+    
+    SELECT tenBacSi INTO doctorName 
+    FROM bacsi 
+    WHERE maBacSi = NEW.maBacSi;
+    
+    SET leaveDate = DATE_FORMAT(NEW.ngayNghi, '%d/%m/%Y');
+    
+    IF NEW.maCa IS NOT NULL THEN
+        SELECT tenCa INTO shiftName 
+        FROM calamviec 
+        WHERE maCa = NEW.maCa;
+        SET caInfo = CONCAT(' - ', shiftName);
+    ELSE
+        SET caInfo = ' - Cả ngày';
+    END IF;
+    
+    INSERT INTO thongbaoadmin (maNghi, maBacSi, loai, tieuDe, noiDung, thoiGian, daXem)
+    VALUES (
+        NEW.maNghi,
+        NEW.maBacSi,
+        'Nghỉ phép',
+        'Đơn xin nghỉ phép',
+        CONCAT('Bác sĩ ', doctorName, ' xin nghỉ phép vào ngày ', leaveDate, caInfo, 
+               IF(NEW.lyDo IS NOT NULL AND NEW.lyDo != '', CONCAT('. Lý do: ', NEW.lyDo), '')),
+        NOW(),
+        0
+    );
+END
+$$
+DELIMITER ;
 
 CREATE TABLE `nguoidung` (
   `id` int(11) NOT NULL,
@@ -221,6 +358,32 @@ INSERT INTO `suatkham` (`maSuat`, `maCa`, `gioBatDau`, `gioKetThuc`) VALUES
 (10, 2, '15:00:00', '15:40:00'),
 (11, 2, '15:40:00', '16:20:00'),
 (12, 2, '16:20:00', '17:00:00');
+
+CREATE TABLE `thongbaoadmin` (
+  `maThongBao` int(11) NOT NULL,
+  `maNghi` int(11) DEFAULT NULL,
+  `maBacSi` varchar(20) NOT NULL,
+  `loai` enum('Nghỉ phép','Hủy nghỉ') NOT NULL DEFAULT 'Nghỉ phép',
+  `tieuDe` varchar(255) NOT NULL,
+  `noiDung` text NOT NULL,
+  `thoiGian` datetime DEFAULT current_timestamp(),
+  `daXem` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `thongbaoadmin` (`maThongBao`, `maNghi`, `maBacSi`, `loai`, `tieuDe`, `noiDung`, `thoiGian`, `daXem`) VALUES
+(1, 3, 'BS202511090112882', 'Nghỉ phép', 'Đơn xin nghỉ phép', 'Bác sĩ Nguyễn Thành C xin nghỉ phép vào ngày 17/11/2025 - Ca sáng. Lý do: 0', '2025-11-15 20:22:57', 1),
+(2, 4, 'BS202511090112882', 'Nghỉ phép', 'Đơn xin nghỉ phép', 'Bác sĩ Nguyễn Thành C xin nghỉ phép vào ngày 17/11/2025 - Ca chiều. Lý do: ???', '2025-11-15 20:22:57', 1);
+
+CREATE TABLE `thongbaolichkham` (
+  `maThongBao` int(11) NOT NULL,
+  `maBacSi` varchar(20) NOT NULL,
+  `maLichKham` int(11) DEFAULT NULL,
+  `loai` enum('Đặt lịch','Hủy lịch') NOT NULL,
+  `tieuDe` varchar(255) NOT NULL,
+  `noiDung` text NOT NULL,
+  `thoiGian` datetime DEFAULT current_timestamp(),
+  `daXem` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 ALTER TABLE `bacsi`
@@ -276,6 +439,20 @@ ALTER TABLE `suatkham`
   ADD PRIMARY KEY (`maSuat`),
   ADD KEY `maCa` (`maCa`);
 
+ALTER TABLE `thongbaoadmin`
+  ADD PRIMARY KEY (`maThongBao`),
+  ADD KEY `maBacSi` (`maBacSi`),
+  ADD KEY `maNghi` (`maNghi`),
+  ADD KEY `idx_daxem` (`daXem`),
+  ADD KEY `idx_thoigian` (`thoiGian`);
+
+ALTER TABLE `thongbaolichkham`
+  ADD PRIMARY KEY (`maThongBao`),
+  ADD KEY `maBacSi` (`maBacSi`),
+  ADD KEY `maLichKham` (`maLichKham`),
+  ADD KEY `idx_daxem` (`daXem`),
+  ADD KEY `idx_thoigian` (`thoiGian`);
+
 
 ALTER TABLE `calamviec`
   MODIFY `maCa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
@@ -284,16 +461,22 @@ ALTER TABLE `goikham`
   MODIFY `maGoi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `lichkham`
-  MODIFY `maLichKham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `maLichKham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 ALTER TABLE `ngaynghi`
-  MODIFY `maNghi` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `maNghi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `nguoidung`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 ALTER TABLE `suatkham`
   MODIFY `maSuat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+ALTER TABLE `thongbaoadmin`
+  MODIFY `maThongBao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `thongbaolichkham`
+  MODIFY `maThongBao` int(11) NOT NULL AUTO_INCREMENT;
 
 
 ALTER TABLE `bacsi`
@@ -327,3 +510,11 @@ ALTER TABLE `quantrivien`
 
 ALTER TABLE `suatkham`
   ADD CONSTRAINT `suatkham_ibfk_1` FOREIGN KEY (`maCa`) REFERENCES `calamviec` (`maCa`);
+
+ALTER TABLE `thongbaoadmin`
+  ADD CONSTRAINT `thongbaoadmin_ibfk_1` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thongbaoadmin_ibfk_2` FOREIGN KEY (`maNghi`) REFERENCES `ngaynghi` (`maNghi`) ON DELETE SET NULL;
+
+ALTER TABLE `thongbaolichkham`
+  ADD CONSTRAINT `thongbao_ibfk_1` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thongbao_ibfk_2` FOREIGN KEY (`maLichKham`) REFERENCES `lichkham` (`maLichKham`) ON DELETE SET NULL;
