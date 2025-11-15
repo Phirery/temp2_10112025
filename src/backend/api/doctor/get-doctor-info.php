@@ -1,17 +1,9 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: http://127.0.0.1:5500');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require_once '../../config/cors.php';
+require_once '../../core/db.php';
+require_once '../../core/session.php';
 
-$conn = new mysqli("localhost", "root", "", "datlichkham");
-$conn->set_charset("utf8mb4");
-
-if ($conn->connect_error) {
-    echo json_encode(['error' => 'Kết nối thất bại:((']);
-    exit;
-}
+requireLogin('bacsi');
 
 // ===== Khi hoàn thiện chức năng đăng nhập, bỏ comment đoạn session bên dưới =====
 /*
