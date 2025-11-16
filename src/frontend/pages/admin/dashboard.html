@@ -99,6 +99,7 @@
             color: white;
             text-decoration: none;
             transition: all 0.3s;
+            position: relative;
         }
 
         .sidebar-menu a:hover,
@@ -112,6 +113,19 @@
             width: 25px;
             margin-right: 12px;
             font-size: 1.1rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            right: 20px;
+            background: #ff3b3b;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
         }
 
         .sidebar-footer {
@@ -165,6 +179,26 @@
             padding: 5px;
         }
 
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--primary-purple);
+            padding: 5px 10px;
+        }
+
+        .notification-icon .badge {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            background: #ff3b3b;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+        }
+
         .user-info {
             display: flex;
             align-items: center;
@@ -198,7 +232,7 @@
         }
 
         .logout-btn-desktop {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
             padding: 8px 20px;
@@ -210,7 +244,7 @@
 
         .logout-btn-desktop:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .content-area {
@@ -484,21 +518,6 @@
             margin-left: auto;
         }
 
-        .logout-btn-desktop {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .logout-btn-desktop:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px #b7a3cb;
-        }
         .user-logout-item {
             display: none;
         }
@@ -518,6 +537,10 @@
             }
 
             .menu-toggle {
+                display: block;
+            }
+
+            .notification-icon {
                 display: block;
             }
 
@@ -638,13 +661,21 @@
                     <span>Quản lý tài khoản</span>
                 </a>
             </li>
+            <li>
+                <a href="thongbao.html">
+                    <i class="fas fa-bell"></i>
+                    <span>Thông báo</span>
+                    <span class="notification-badge" id="sidebarNotifBadge" style="display:none;">0</span>
+                </a>
+            </li>
             <li class="user-logout-item">
                 <div class="user-info-sidebar">
                     <div class="user-avatar">A</div>                
                     <div class="user-details">
+                        <div class="user-name" id="sidebarUserName">Admin</div>
                     </div>
                 </div>
-                <button class="logout-btn-sidebar">
+                <button class="logout-btn-sidebar" onclick="logout()">
                     <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                 </button>
             </li>
@@ -654,16 +685,24 @@
     <div class="main-content">
         <div class="top-bar">
             <div class="top-bar-left">
-                <h5><i class="fas fa-chart-line me-2"></i>Dashboard</h5>
-            </div>
-            <div class="top-bar-right">
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
+                <h5><i class="fas fa-chart-line me-2"></i>Dashboard</h5>
+            </div>
+            <div class="top-bar-right">
+                <a href="thongbao.html" class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="topNotifBadge" style="display:none;">0</span>
+                </a>
             </div>
             <div class="logout-header">
                 <div class="user-avatar">A</div>
-                <button class="logout-btn-desktop">
+                <div class="user-details">
+                    <div class="user-name" id="adminName">Đang tải...</div>
+                    <div class="user-role">Quản trị viên</div>
+                </div>
+                <button class="logout-btn-desktop" onclick="logout()">
                     <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                 </button>
             </div>
@@ -680,7 +719,7 @@
                     <div class="stat-number loading" id="totalAppointments">0</div>
                     <div class="stat-label">Tổng lịch khám</div>
                     <div class="stat-trend up">
-                        <i class="fas fa-arrow-up me-1"></i>+?% so với tháng trước
+                        <i class="fas fa-arrow-up me-1"></i>Hệ thống hoạt động tốt
                     </div>
                 </div>
 
@@ -691,7 +730,7 @@
                     <div class="stat-number loading" id="totalPatients">0</div>
                     <div class="stat-label">Tổng bệnh nhân</div>
                     <div class="stat-trend up">
-                        <i class="fas fa-arrow-up me-1"></i>+?% so với tháng trước
+                        <i class="fas fa-arrow-up me-1"></i>Đang tăng trưởng
                     </div>
                 </div>
 
@@ -702,7 +741,7 @@
                     <div class="stat-number loading" id="totalDoctors">0</div>
                     <div class="stat-label">Tổng bác sĩ</div>
                     <div class="stat-trend up">
-                        <i class="fas fa-arrow-up me-1"></i>+? bác sĩ mới
+                        <i class="fas fa-arrow-up me-1"></i>Đội ngũ chuyên nghiệp
                     </div>
                 </div>
 
@@ -810,54 +849,135 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const mobileOverlay = document.getElementById('mobileOverlay');
+        const API_BASE = 'http://localhost/DO_AN_1/code_doan1/src/backend/api/admin';
 
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-            mobileOverlay.classList.toggle('active');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminInfo();
+            loadStatistics();
+            loadUnreadNotificationsCount();
+            
+            // Auto refresh notification count
+            setInterval(loadUnreadNotificationsCount, 30000);
 
-        mobileOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-        });
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mobileOverlay = document.getElementById('mobileOverlay');
 
-        sidebar.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                    mobileOverlay.classList.remove('active');
-                }
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                mobileOverlay.classList.toggle('active');
             });
+
+            mobileOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+            });
+
+            sidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                        mobileOverlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.onscroll = function() {
+                const btn = document.getElementById('scrollTopBtn');
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    btn.style.display = 'flex';
+                } else {
+                    btn.style.display = 'none';
+                }
+            };
         });
 
-        window.onscroll = function() {
-            const btn = document.getElementById('scrollTopBtn');
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                btn.style.display = 'flex';
-            } else {
-                btn.style.display = 'none';
+        async function loadAdminInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/get-admin-info.php`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const userName = data.data.tenDangNhap || 'Admin';
+                    document.getElementById('adminName').textContent = userName;
+                    document.getElementById('sidebarUserName').textContent = userName;
+                    
+                    // Update avatar with first letter
+                    const firstLetter = userName.charAt(0).toUpperCase();
+                    document.querySelectorAll('.user-avatar').forEach(el => {
+                        el.textContent = firstLetter;
+                    });
+                } else {
+                    console.error('Failed to load admin info:', data.message);
+                    if (data.message === 'Chưa đăng nhập' || data.message === 'Không có quyền truy cập') {
+                        showAlert('error', 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                        setTimeout(() => {
+                            window.location.href = '../auth/login.html';
+                        }, 2000);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading admin info:', error);
             }
-        };
+        }
 
         async function loadStatistics() {
             try {
-                const response = await fetch('http://localhost/DO_AN_1/code_doan1/src/backend/api/admin/statistics-dashboard.php');
+                const response = await fetch(`${API_BASE}/statistics-dashboard.php`, {
+                    credentials: 'include'
+                });
                 const data = await response.json();
                 
-                animateNumber('totalAppointments', data.appointments);
-                animateNumber('totalPatients', data.patients);
-                animateNumber('totalDoctors', data.doctors);
-                animateNumber('totalDepartments', data.departments);
+                if (data.success) {
+                    animateNumber('totalAppointments', data.data.appointments);
+                    animateNumber('totalPatients', data.data.patients);
+                    animateNumber('totalDoctors', data.data.doctors);
+                    animateNumber('totalDepartments', data.data.departments);
+                } else {
+                    console.error('Failed to load statistics:', data.message);
+                    if (data.message === 'Chưa đăng nhập' || data.message === 'Không có quyền truy cập') {
+                        showAlert('error', 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                        setTimeout(() => {
+                            window.location.href = '../auth/login.html';
+                        }, 2000);
+                    }
+                }
             } catch (error) {
-                console.error('Lỗi:', error);
+                console.error('Error loading statistics:', error);
                 document.querySelectorAll('#totalAppointments, #totalPatients, #totalDoctors, #totalDepartments')
                     .forEach(el => {
                         el.textContent = 'Lỗi';
                         el.classList.remove('loading');
                     });
+            }
+        }
+
+        async function loadUnreadNotificationsCount() {
+            try {
+                const response = await fetch(`${API_BASE}/get-unread-notifications-count.php`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.count > 0) {
+                    // Update top bar badge
+                    const topBadge = document.getElementById('topNotifBadge');
+                    topBadge.textContent = data.count;
+                    topBadge.style.display = 'inline-block';
+                    
+                    // Update sidebar badge
+                    const sidebarBadge = document.getElementById('sidebarNotifBadge');
+                    sidebarBadge.textContent = data.count;
+                    sidebarBadge.style.display = 'inline-block';
+                } else {
+                    // Hide badges if no unread notifications
+                    document.getElementById('topNotifBadge').style.display = 'none';
+                    document.getElementById('sidebarNotifBadge').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading notification count:', error);
             }
         }
 
@@ -894,7 +1014,12 @@
             setTimeout(() => alertDiv.remove(), 5000);
         }
 
-        document.addEventListener('DOMContentLoaded', loadStatistics);
+        function logout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                // Call logout API here if needed
+                window.location.href = '../auth/login.html';
+            }
+        }
     </script>
 </body>
 </html>
