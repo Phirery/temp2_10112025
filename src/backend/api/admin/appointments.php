@@ -1,25 +1,11 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require_once '../../config/cors.php';
+require_once '../../core/dp.php';
+require_once '../../core/session.php';
 
-// Kết nối database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "datlichkham";
+require_role('quantri');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-$conn->set_charset("utf8mb4");
-
-if ($conn->connect_error) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Kết nối database thất bại: ' . $conn->connect_error
-    ]);
-    exit;
-}
+session_start();
 
 // Lấy danh sách lịch khám với thông tin bệnh nhân và bác sĩ
 $sql = "SELECT 

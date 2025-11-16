@@ -1,29 +1,20 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require_once '../../config/cors.php';
+require_once '../../core/dp.php';
+require_once '../../core/session.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit;
-}
+require_role('quantri');
 
-$conn = new mysqli("localhost", "root", "", "datlichkham");
-$conn->set_charset("utf8mb4");
-
-if ($conn->connect_error) {
-    echo json_encode(['success' => false, 'message' => 'Kết nối thất bại']);
-    exit;
-}
+session_start();
 
 try {
     $result = $conn->query("DELETE FROM thongbaoadmin WHERE daXem = 1");
     
     if ($result) {
         $deleted = $conn->affected_rows;
-        echo json_encode(['success' => true, 'deleted' => $deleted]);
+        echo json_encode(['success' => true, 'deleted' => $deleted, 'message' => "Đã xóa $deleted thông báo."]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Xóa thất bại']);
+        echo json_encode(['success' => false, 'message' => 'Xóa thất bại: ' . $conn->error]);
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);

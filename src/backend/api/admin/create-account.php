@@ -1,9 +1,11 @@
 <?php
 require_once '../../config/cors.php';
-require_once '../../core/db.php';
+require_once '../../core/dp.php';
 require_once '../../core/session.php';
 
-requireLogin('quantri');
+require_role('quantri');
+
+session_start();
 
 $data = json_decode(file_get_contents("php://input"), true);
 if (

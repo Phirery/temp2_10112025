@@ -7,17 +7,13 @@
 // Để xuất PDF thực sự, uncomment code bên dưới
 
 // Kết nối database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "datlichkham";
+require_once '../../config/cors.php';
+require_once '../../core/dp.php';
+require_once '../../core/session.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-$conn->set_charset("utf8mb4");
+require_role('quantri');
 
-if ($conn->connect_error) {
-    die("Connection failed");
-}
+session_start();
 
 // Lấy tham số
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'month';
