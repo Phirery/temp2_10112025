@@ -1,23 +1,58 @@
 <?php
-session_start();
+// Bắt đầu session một cách an toàn (chỉ bắt đầu nếu chưa có)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-function requireLogin($role = null) {
-    if (!isset($_SESSION['id'])) {
-        echo json_encode(["success" => false, "message" => "Chưa đăng nhập"]);
+/**
+ * Hàm kiểm tra vai trò người dùng.
+ * Nếu không hợp lệ, sẽ tự động trả về lỗi JSON và dừng script.
+ *
+ * @param string|array $roles Vai trò yêu cầu (vd: 'quantri')
+ * hoặc một mảng các vai trò (vd: ['quantri', 'bacsi'])
+ */
+function require_role($roles) {
+    
+    // 1. Kiểm tra xem đã đăng nhập chưa
+    if (!isset($_SESSION['id']) || !isset($_SESSION['vaiTro'])) {
+        http_response_code(401); // 401 - Unauthorized (Chưa xác thực)
+        echo json_encode([
+            'success' => false,
+            'message' => 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.'
+        ]);
         exit;
     }
 
-    if ($role !== null && $_SESSION['vaiTro'] !== $role) {
-        echo json_encode(["success" => false, "message" => "Không có quyền truy cập"]);
+    // 2. Lấy vai trò của người dùng từ session
+    $userRole = $_SESSION['vaiTro'];
+
+    // 3. Kiểm tra vai trò
+    $isAllowed = false;
+    
+    if (is_array($roles)) {
+        // Nếu $roles là một mảng (cho phép nhiều vai trò)
+        if (in_array($userRole, $roles)) {
+            $isAllowed = true;
+        }
+    } else {
+        // Nếu $roles là một chuỗi (chỉ 1 vai trò)
+        if ($userRole === $roles) {
+            $isAllowed = true;
+        }
+    }
+
+    // 4. Nếu không được phép, trả về lỗi
+    if (!$isAllowed) {
+        http_response_code(403); // 403 - Forbidden (Bị cấm)
+        echo json_encode([
+            'success' => false,
+            'message' => 'Bạn không có quyền thực hiện hành động này.'
+        ]);
         exit;
     }
+    
+    // Nếu đến được đây, người dùng hợp lệ -> không làm gì cả,
+    // để script gốc (API) tiếp tục chạy
 }
-function getDoctorId($conn) {
-    $stmt = $conn->prepare("SELECT maBacSi FROM bacsi WHERE nguoiDungId = ?");
-    $stmt->bind_param("i", $_SESSION['id']);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
 
-    return $row ? $row['maBacSi'] : null;
-}
+?>
