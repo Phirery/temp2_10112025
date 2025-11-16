@@ -9,7 +9,7 @@ CREATE TABLE `bacsi` (
   `tenBacSi` varchar(100) DEFAULT NULL,
   `maChuyenKhoa` varchar(10) DEFAULT NULL,
   `moTa` text DEFAULT NULL,
-  `chuyenGia` tinyint(1) NOT NULL DEFAULT 0 --Mặc định không dùng, coi như nó không tồn tại
+  `chuyenGia` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `bacsi` (`nguoiDungId`, `maBacSi`, `tenBacSi`, `maChuyenKhoa`, `moTa`, `chuyenGia`) VALUES
@@ -34,7 +34,7 @@ INSERT INTO `benhnhan` (`nguoiDungId`, `maBenhNhan`, `tenBenhNhan`, `ngaySinh`, 
 DELIMITER $$
 CREATE TRIGGER `validate_birthdate_before_insert` BEFORE INSERT ON `benhnhan` FOR EACH ROW BEGIN
     IF NEW.ngaySinh > CURDATE() THEN
-        SET NEW.ngaySinh = CURDATE();
+        SET NEW.ngaySinh = CURDATE();  -- Set = ngày hiện tại để tuổi = 0
     END IF;
 END
 $$
@@ -42,7 +42,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `validate_birthdate_before_update` BEFORE UPDATE ON `benhnhan` FOR EACH ROW BEGIN
     IF NEW.ngaySinh > CURDATE() THEN
-        SET NEW.ngaySinh = CURDATE();
+        SET NEW.ngaySinh = CURDATE();  -- Set = ngày hiện tại để tuổi = 0
     END IF;
 END
 $$
@@ -151,7 +151,7 @@ CREATE TABLE `lichkham` (
   `maCa` int(11) NOT NULL,
   `maSuat` int(11) NOT NULL,
   `maGoi` int(11) DEFAULT NULL,
-  `trangThai` enum('Chờ','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL, --Không dùng trạng thái "chờ", coi như nó không tồn tại
+  `trangThai` enum('Chờ','Đã đặt','Hoàn thành','Hủy') DEFAULT NULL,
   `ghiChu` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -321,14 +321,15 @@ CREATE TABLE `nguoidung` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `nguoidung` (`id`, `tenDangNhap`, `matKhau`, `soDienThoai`, `vaiTro`, `trangThai`) VALUES
-(1, 'nguoidung1', 'passwork', '0987654321', 'benhnhan', 'Hoạt Động'),
-(2, 'nguoidung2', 'passwork', '0987654321', 'bacsi', 'Hoạt Động'),
-(3, 'nguoidung3', 'passwork', '0987654321', 'quantri', 'Hoạt Động'),
+(1, 'nguoidung1', 'passwork', '0987654322', 'benhnhan', 'Hoạt Động'),
+(2, 'nguoidung2', 'passwork', '0987654323', 'bacsi', 'Hoạt Động'),
+(3, 'nguoidung3', '$2y$10$55XC.J1xbMe0tIWNJb9UneupzHgh1x1fioWqKiF/y8eAbcGpERYHC', '0987654321', 'quantri', 'Hoạt Động'),
 (5, 'nguyenthanhccur1025', '$2y$10$j/IqnU9fT0QPeHyZNU1uuum/5IktMdkELYMVs.Uvu9KOgu1PzjXoq', '0917382642', 'bacsi', 'Hoạt Động'),
 (7, 'levand', '$2y$10$0w2wLh5q8dn.05WVbEYjc.Epw.C4BLmppiM5Hwj4QO7fbSDvqfOkK', '0361846731', 'bacsi', 'Hoạt Động'),
 (8, 'ABCD', '$2y$10$Gucpt7iX418XWZkSgIf8EeSwEj3qDkaepUfrFLc6hiDm.CbmFDqsS', '0936846244', 'benhnhan', 'Hoạt Động'),
 (11, '0000000000', '$2y$10$dPxrzHJVA454.TgEO/rLXeta9uL32XKD3jHgx4x6F7VWRX0MSnCW2', '0000000000', 'benhnhan', 'Hoạt Động'),
-(13, 'ndagidyawbda', '$2y$10$CyYX/o4kjkEJwQY7d2EOqOvlDdwBPAhKKZWnILRQJj3oq3wTKYXKq', '0388888888', 'bacsi', 'Hoạt Động');
+(13, 'ndagidyawbda', '$2y$10$CyYX/o4kjkEJwQY7d2EOqOvlDdwBPAhKKZWnILRQJj3oq3wTKYXKq', '0388888888', 'bacsi', 'Hoạt Động'),
+(14, '1234', '$2y$10$9fgoU9a7DmIzfT9lBeEIeOyck4vHWoGcUB4jWO3zG7iADAbjX1YBS', '0123456789', 'quantri', 'Hoạt Động');
 
 CREATE TABLE `quantrivien` (
   `nguoiDungId` int(11) NOT NULL,
@@ -429,7 +430,8 @@ ALTER TABLE `ngaynghi`
 
 ALTER TABLE `nguoidung`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `tenDangNhap` (`tenDangNhap`);
+  ADD UNIQUE KEY `tenDangNhap` (`tenDangNhap`),
+  ADD UNIQUE KEY `soDienThoai` (`soDienThoai`);
 
 ALTER TABLE `quantrivien`
   ADD PRIMARY KEY (`maQuanTriVien`),
@@ -467,7 +469,7 @@ ALTER TABLE `ngaynghi`
   MODIFY `maNghi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `nguoidung`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 ALTER TABLE `suatkham`
   MODIFY `maSuat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
@@ -518,4 +520,3 @@ ALTER TABLE `thongbaoadmin`
 ALTER TABLE `thongbaolichkham`
   ADD CONSTRAINT `thongbao_ibfk_1` FOREIGN KEY (`maBacSi`) REFERENCES `bacsi` (`maBacSi`) ON DELETE CASCADE,
   ADD CONSTRAINT `thongbao_ibfk_2` FOREIGN KEY (`maLichKham`) REFERENCES `lichkham` (`maLichKham`) ON DELETE SET NULL;
-
