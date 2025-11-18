@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Lấy danh sách chuyên khoa (có thể lọc theo khoa nếu có tham số)
 $maKhoa = isset($_GET['maKhoa']) ? $conn->real_escape_string($_GET['maKhoa']) : '';
 

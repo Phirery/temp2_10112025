@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 try {
     // Đếm số thông báo chưa đọc
     $stmt = $conn->prepare("

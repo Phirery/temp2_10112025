@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $sql = "SELECT maGoi, tenGoi, moTa, thoiLuong, gia FROM goikham ORDER BY gia";
 $result = $conn->query($sql);
 $packages = [];

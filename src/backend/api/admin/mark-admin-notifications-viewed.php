@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 if ($conn->connect_error) {
     echo json_encode(['success' => false, 'message' => 'Kết nối thất bại']);
     exit;

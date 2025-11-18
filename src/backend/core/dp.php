@@ -7,3 +7,4 @@ if ($conn->connect_error) {
     echo json_encode(["success" => false, "message" => "Lỗi kết nối database"]);
     exit;
 }
+?>

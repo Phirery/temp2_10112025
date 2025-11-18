@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $stats = [
     'total' => 0,
     'internal' => 0,

@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $input = json_decode(file_get_contents('php://input'), true);
 $maThongBao = $input['maThongBao'] ?? '';
 

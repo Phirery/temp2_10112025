@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $sql = "SELECT maCa, tenCa, gioBatDau, gioKetThuc FROM calamviec ORDER BY gioBatDau";
 $result = $conn->query($sql);
 $shifts = [];

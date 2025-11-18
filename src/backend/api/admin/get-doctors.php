@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Lấy danh sách bác sĩ với thông tin chuyên khoa
 $sql = "SELECT 
             bs.maBacSi,

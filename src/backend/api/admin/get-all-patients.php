@@ -5,7 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
 try {
     $sql = "SELECT 
                 b.maBenhNhan, b.tenBenhNhan, b.ngaySinh, b.gioiTinh, b.soTheBHYT,

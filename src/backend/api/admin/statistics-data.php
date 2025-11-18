@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $filter = $_GET['filter'] ?? 'month';
 $dateFrom = $_GET['dateFrom'] ?? null;
 $dateTo = $_GET['dateTo'] ?? null;

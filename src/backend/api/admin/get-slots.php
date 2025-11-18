@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 $maCa = isset($_GET['maCa']) ? intval($_GET['maCa']) : 0;
 
 if (!$maCa) {

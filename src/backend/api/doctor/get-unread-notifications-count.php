@@ -13,22 +13,27 @@ try {
     $stmt->close();
 
     if (!$maBacSi) {
-        echo json_encode(['success' => false, 'message' => 'Không tìm thấy bác sĩ']);
+        echo json_encode(['success' => true, 'count' => 0]);
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE thongbaolichkham SET daXem = 1 WHERE maBacSi = ? AND daXem = 0");
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) as count 
+        FROM thongbaolichkham 
+        WHERE maBacSi = ? AND daXem = 0
+    ");
     $stmt->bind_param("s", $maBacSi);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
     
-    if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'updated' => $stmt->affected_rows]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Cập nhật thất bại']);
-    }
+    echo json_encode([
+        "success" => true,
+        "count" => (int)$row['count']
+    ]);
     $stmt->close();
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage(), 'count' => 0]);
 }
-
 $conn->close();
 ?>

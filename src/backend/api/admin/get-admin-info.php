@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 try {
     // Lấy thông tin admin
     $stmt = $conn->prepare("

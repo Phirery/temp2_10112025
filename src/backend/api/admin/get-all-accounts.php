@@ -5,7 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
 $sql = "
 SELECT 
     nd.id, 

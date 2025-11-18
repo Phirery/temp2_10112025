@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 try {
     $result = $conn->query("DELETE FROM thongbaoadmin WHERE daXem = 1");
     

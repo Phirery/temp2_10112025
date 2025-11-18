@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Lấy tham số
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'month';
 $dateFrom = isset($_GET['dateFrom']) ? $_GET['dateFrom'] : null;

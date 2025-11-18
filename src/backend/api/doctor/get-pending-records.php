@@ -1,23 +1,13 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: http://127.0.0.1:5500');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require_once '../../config/cors.php';
+require_once '../../core/dp.php';
+require_once '../../core/session.php';
 
-$conn = new mysqli("localhost", "root", "", "datlichkham");
-$conn->set_charset("utf8mb4");
-
-if ($conn->connect_error) {
-    echo json_encode(['success' => false, 'message' => 'Kết nối thất bại']);
-    exit;
-}
-
-$idNguoiDung = 5;
+require_role('bacsi');
 
 try {
     $stmt = $conn->prepare("SELECT maBacSi FROM bacsi WHERE nguoiDungId = ?");
-    $stmt->bind_param("i", $idNguoiDung);
+    $stmt->bind_param("i", $_SESSION['id']);
     $stmt->execute();
     $maBacSi = $stmt->get_result()->fetch_assoc()['maBacSi'] ?? null;
     $stmt->close();
@@ -27,15 +17,18 @@ try {
         exit;
     }
 
-    $sql = "SELECT h.maHoSo, h.ngayTao, h.chanDoan, h.dieuTri,
+    // JOIN with suatkham to get time details
+    $sql = "SELECT h.maHoSo, h.ngayTao, h.chanDoan, h.dieuTri, h.ghiChu, h.ngayKham,
             bn.tenBenhNhan, bn.ngaySinh, bn.gioiTinh,
-            l.ngayKham, c.tenCa
+            l.ngayKham, c.tenCa,
+            s.gioBatDau, s.gioKetThuc
             FROM hosobenhan h
             JOIN benhnhan bn ON h.maBenhNhan = bn.maBenhNhan
-            JOIN lichkham l ON h.maLichKham = l.maLichKham
-            JOIN calamviec c ON l.maCa = c.maCa
+            LEFT JOIN lichkham l ON h.maLichKham = l.maLichKham
+            LEFT JOIN calamviec c ON l.maCa = c.maCa
+            LEFT JOIN suatkham s ON l.maSuat = s.maSuat
             WHERE h.maBacSi = ? AND h.trangThai = 'Chưa hoàn thành'
-            ORDER BY h.ngayTao DESC";
+            ORDER BY h.ngayKham DESC, s.gioBatDau DESC";
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $maBacSi);

@@ -1,16 +1,17 @@
 <?php
-// Bắt đầu session một cách an toàn (chỉ bắt đầu nếu chưa có)
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => false,     // Chỉ bật true nếu dùng HTTPS
+        'httponly' => true,
+        'samesite' => 'None',  // Quan trọng nhất
+    ]);
+
     session_start();
 }
 
-/**
- * Hàm kiểm tra vai trò người dùng.
- * Nếu không hợp lệ, sẽ tự động trả về lỗi JSON và dừng script.
- *
- * @param string|array $roles Vai trò yêu cầu (vd: 'quantri')
- * hoặc một mảng các vai trò (vd: ['quantri', 'bacsi'])
- */
 function require_role($roles) {
     
     // 1. Kiểm tra xem đã đăng nhập chưa

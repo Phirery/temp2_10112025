@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Lấy danh sách lịch khám với thông tin bệnh nhân và bác sĩ
 $sql = "SELECT 
             lk.maLichKham,

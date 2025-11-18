@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Bắt đầu một transaction để đảm bảo an toàn dữ liệu khi tạo mã
 $conn->begin_transaction();
 

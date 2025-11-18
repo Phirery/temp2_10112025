@@ -5,8 +5,6 @@ require_once '../../core/session.php';
 
 require_role('quantri');
 
-session_start();
-
 // Lấy dữ liệu POST
 $data = json_decode(file_get_contents('php://input'), true);
 $maLichKham = $conn->real_escape_string($data['maLichKham']);

@@ -1,7 +1,6 @@
 <?php
 require_once '../../config/cors.php';
-
-session_start();
+require_once '../../core/session.php';
 
 // Xóa toàn bộ session
 $_SESSION = array();
